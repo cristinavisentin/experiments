@@ -30,12 +30,12 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
 
 ea.experiment(
   runs = (randomGenerator = (seed = [1:1:3]) * [m.defaultRG()])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 500))
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 5000))
   * (representation = [ea.representation.doubleString()])
   * (mapper = [
-    ea.mapper.ndsToNrla(name = "linear-zeroq"; of = ea.mapper.dsToNpnds(npnds = ds.num.linear(zeroQ = true)));
     ea.mapper.ndsToNrla(name = "linear"; of = ea.mapper.dsToNpnds(npnds = ds.num.linear(zeroQ = false)));
-    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = [8])))
+    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = [8])));
+    ea.mapper.ndsToNrla(name = "hebbian"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [16]; learningRate = 0.02; weightInitializationType = random; parametrizationType = neuron)))
   ])
   * [ea.s.ga(name = ""ga+{mapper.name}"")
   ])
@@ -53,6 +53,7 @@ ea.experiment(
   listeners = [
     ea.l.console(
       functions = [
+        ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
         f.mapValue(key = avg; of = ea.f.quality(of = ea.f.best()); format = "%6.1f")
       ];
       onlyLast = false
@@ -68,7 +69,7 @@ ea.experiment(
       processor = ea.f.toMultiImage(
         drawer = ds.d.navigation();
         of = f.all(
-          of = ds.f.nonLearning(of = ea.f.solution());
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
           fs = (simulation = (environment = $learningEnvs)
           * [ds.sat.fromEnvironment()])
           * [ds.f.simulate(dT = $dT; tRange = $tRange)]
