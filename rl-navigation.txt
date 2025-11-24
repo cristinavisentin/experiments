@@ -1,25 +1,51 @@
+$basePath = ''./results/{^^.name}/{^^.startTime}/''
+
 $dT = 0.1
 $tRange = m.range(min = 0; max = 30)
 
-$learningEnvs = (arena = [
-  ds.arena.prepared(
+$emptyArena = ds.arena.prepared(
     name = empty;
-    initialRobotXRange = m.range(min = 0.45; max = 0.5);
-    initialRobotYRange = m.range(min = 0.78; max = 0.8);
-    targetXRange = m.range(min = 0.3; max = 0.6)
-  );
-  ds.arena.prepared(
+    initialRobotXRange = m.range(min = 0.78; max = 0.8);
+    initialRobotYRange = m.range(min = 0.45; max = 0.5);
+    targetXRange = m.range(min = 0.2; max = 0.22);
+    targetYRange = m.range(min = 0.3; max = 0.6)
+  )
+$a_barrierArena = ds.arena.prepared(
     name = a_barrier;
     initialRobotXRange = m.range(min = 0.45; max = 0.5);
     initialRobotYRange = m.range(min = 0.78; max = 0.8)
-  );
-  ds.arena.prepared(
+  )
+$snakeArena = ds.arena.prepared(
     name = snake;
     initialRobotXRange = m.range(min = 0.1; max = 0.12);
     initialRobotYRange = m.range(min = 0.1; max = 0.12);
     targetXRange = m.range(min = 0.9; max = 0.95);
     targetYRange = m.range(min = 0.9; max = 0.95)
   )
+
+$learningEnvs = (arena = [
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $snakeArena;
+  $snakeArena;
+  $snakeArena;
+  $snakeArena;
+  $snakeArena
+])
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$testEnvs = (arena = [
+  $emptyArena;
+  $a_barrierArena;
+  $snakeArena
 ])
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
@@ -29,8 +55,8 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
 ))
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:5]) * [m.defaultRG()])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 5000))
+  runs = (randomGenerator = (seed = [1:1:3]) * [m.defaultRG()])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 500))
   * (representation = [ea.representation.doubleString()])
   * (mapper = [
     ea.mapper.ndsToNrla(name = "linear"; of = ea.mapper.dsToNpnds(npnds = ds.num.linear(zeroQ = false)));
@@ -48,7 +74,7 @@ ea.experiment(
     ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = synapse; weightInitializationType = zeros)));
     ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = synapse; weightInitializationType = params)))
   ])
-  * [ea.s.ga(name = ""ga+{mapper.name}"")
+  * [ea.s.ga(name = ''ga+{mapper.name}'')
   ])
   * (problem = [
     ea.p.functionsToScbmo(
@@ -63,25 +89,30 @@ ea.experiment(
   * [ea.run()];
   listeners = [
     ea.l.console(
-      functions = [
+      eFunctions = [
         ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
         f.mapValue(key = avg; of = ea.f.quality(of = ea.f.best()); format = "%6.1f")
       ];
       onlyLast = false
     );
     ea.l.savePlotForExp(
-      path = "./results/{name}/{startTime}/best-fitness.png";
+      path = $basePath + "best-fitness.png";
       plot = ea.plot.multi.quality(q = f.mapValue(key = avg));
       type = png
     );
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-best-fitness.png";
+      plot = ea.plot.multi.qualityBoxplot(q = f.mapValue(key = avg));
+      type = png
+    );
     ea.l.saveForRun(
-      path = "./results/{name}/{startTime}/{run.solver.name}/best-frozen-learning-trajs-{run.randomGenerator.seed:%02d}.png";
+      path = $basePath + "{solver.name}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
       of = ea.acc.lastBest();
-      processor = ea.f.toMultiImage(
+      processor = viz.f.toMultiImage(
         drawer = ds.d.navigation();
         of = f.all(
           of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
-          fs = (simulation = (environment = $learningEnvs)
+          fs = (simulation = (environment = $testEnvs)
           * [ds.sat.fromEnvironment()])
           * [ds.f.simulate(dT = $dT; tRange = $tRange)]
         );
