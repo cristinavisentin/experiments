@@ -4,24 +4,33 @@ $dT = 0.1
 $tRange = m.range(min = 0; max = 30)
 
 $emptyArena = ds.arena.prepared(
-    name = empty;
-    initialRobotXRange = m.range(min = 0.78; max = 0.8);
-    initialRobotYRange = m.range(min = 0.45; max = 0.5);
-    targetXRange = m.range(min = 0.2; max = 0.22);
-    targetYRange = m.range(min = 0.3; max = 0.6)
-  )
+  name = empty;
+  initialRobotXRange = m.range(min = 0.78; max = 0.8);
+  initialRobotYRange = m.range(min = 0.45; max = 0.5);
+  targetXRange = m.range(min = 0.2; max = 0.22);
+  targetYRange = m.range(min = 0.3; max = 0.6)
+)
 $a_barrierArena = ds.arena.prepared(
-    name = a_barrier;
-    initialRobotXRange = m.range(min = 0.45; max = 0.5);
-    initialRobotYRange = m.range(min = 0.78; max = 0.8)
-  )
-$snakeArena = ds.arena.prepared(
-    name = snake;
-    initialRobotXRange = m.range(min = 0.1; max = 0.12);
-    initialRobotYRange = m.range(min = 0.1; max = 0.12);
-    targetXRange = m.range(min = 0.9; max = 0.95);
-    targetYRange = m.range(min = 0.9; max = 0.95)
-  )
+  name = a_barrier;
+  initialRobotXRange = m.range(min = 0.45; max = 0.5);
+  initialRobotYRange = m.range(min = 0.78; max = 0.8)
+)
+$u_barrierArena = ds.arena.prepared(
+  name = u_barrier;
+  initialRobotXRange = m.range(min = 0.5; max = 0.5);
+  initialRobotYRange = m.range(min = 0.85; max = 0.85)
+)
+$deceptive_mazeArena = ds.arena.prepared(
+  name = deceptive_maze;
+  initialRobotXRange = m.range(min = 0.9; max = 0.95);
+  initialRobotYRange = m.range(min = 0.9; max = 0.95);
+  targetXRange = m.range(min = 0.1; max = 0.12);
+  targetYRange = m.range(min = 0.1; max = 0.12)
+)
+$deceptive_corridorArena = ds.arena.fromString(
+  name = "deceptive-corridor";
+  s = "s            |             |             |wwww     wwww             |   w w w w   |   w w w w   |   w w w w   |   w w w w   |   www w w   |   w   w w   |wwww   wwwwww|             |           t "
+)
 
 $learningEnvs = (arena = [
   $emptyArena;
@@ -34,18 +43,27 @@ $learningEnvs = (arena = [
   $a_barrierArena;
   $a_barrierArena;
   $a_barrierArena;
-  $snakeArena;
-  $snakeArena;
-  $snakeArena;
-  $snakeArena;
-  $snakeArena
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena
+])
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$testKnownEnvs = (arena = [
+  $emptyArena;
+  $a_barrierArena;
+  $deceptive_mazeArena
 ])
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
 $testEnvs = (arena = [
   $emptyArena;
   $a_barrierArena;
-  $snakeArena
+  $deceptive_mazeArena;
+  $u_barrierArena;
+  $deceptive_corridorArena
 ])
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
@@ -55,8 +73,8 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
 ))
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:30]) * [m.defaultRG()])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 25000))
+  runs = (randomGenerator = (seed = [1:1:3]) * [m.defaultRG()])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 500))
   * (representation = [ea.representation.doubleString()])
   * (mapper = [
     ea.mapper.ndsToNrla(name = "linear"; of = ea.mapper.dsToNpnds(npnds = ds.num.linear(zeroQ = false)));
@@ -105,6 +123,7 @@ ea.experiment(
       plot = ea.plot.multi.qualityBoxplot(q = f.mapValue(key = avg));
       type = png
     );
+
     ea.l.saveForRun(
       path = $basePath + "{solver.name}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
       of = ea.acc.lastBest();
