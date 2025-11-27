@@ -80,6 +80,19 @@ ea.experiment(
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 25000))
   * (representation = [ea.representation.doubleString()])
   * (mapper = [
+    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp()));
+    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = params)));
     ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = $innerLayers)));
     ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random)));
     ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = zeros)));
@@ -105,20 +118,7 @@ ea.experiment(
     ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = neuron; weightInitializationType = params)));
     ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = random)));
     ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp()));
-    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = params)))
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = params)))
   ])
   * [ea.s.ga(name = ''ga+{mapper.name}'')
   ])
