@@ -72,25 +72,53 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
   reward = ds.e.nav.reward.reaching()
 ))
 
+$innerLayers = [8]
+$twoInnerLayers = [8; 8]
+
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:3]) * [m.defaultRG()])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 500))
+  runs = (randomGenerator = (seed = [1:1:30]) * [m.defaultRG()])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 25000))
   * (representation = [ea.representation.doubleString()])
   * (mapper = [
-    ea.mapper.ndsToNrla(name = "linear"; of = ea.mapper.dsToNpnds(npnds = ds.num.linear(zeroQ = false)));
-    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = [8])));
-    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = network; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = network; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = network; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = layer; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = layer; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = layer; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = neuron; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = neuron; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = neuron; weightInitializationType = params)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = synapse; weightInitializationType = random)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = synapse; weightInitializationType = zeros)));
-    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = [8]; parametrizationType = synapse; weightInitializationType = params)))
+    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = $innerLayers)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = layer; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = layer; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = layer; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = neuron; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = neuron; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = neuron; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp(innerLayers = $twoInnerLayers)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = network; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = network; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = network; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = layer; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = layer; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = layer; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = neuron; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = neuron; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = neuron; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(innerLayers = $twoInnerLayers; parametrizationType = synapse; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "mlp"; of = ea.mapper.dsToNpnds(npnds = ds.num.mlp()));
+    ea.mapper.ndsToNrla(name = "hebbian+network+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+network+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = network; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+layer+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = layer; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+neuron+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = neuron; weightInitializationType = params)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+random"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = random)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+zeros"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = zeros)));
+    ea.mapper.ndsToNrla(name = "hebbian+synapse+params"; of = ea.mapper.dsToNpnds(npnds = ds.num.hebbianMlp(parametrizationType = synapse; weightInitializationType = params)))
   ])
   * [ea.s.ga(name = ''ga+{mapper.name}'')
   ])
@@ -111,21 +139,43 @@ ea.experiment(
         ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
         f.mapValue(key = avg; of = ea.f.quality(of = ea.f.best()); format = "%6.1f")
       ];
+      kFunctions = [
+        f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      ];
       onlyLast = false
     );
     ea.l.savePlotForExp(
       path = $basePath + "best-fitness.png";
-      plot = ea.plot.multi.quality(q = f.mapValue(key = avg));
+      plot = ea.plot.multi.quality(
+        q = f.mapValue(key = avg);
+        ySubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      );
       type = png
     );
     ea.l.savePlotForExp(
       path = $basePath + "boxplot-best-fitness.png";
-      plot = ea.plot.multi.qualityBoxplot(q = f.mapValue(key = avg));
+      plot = ea.plot.multi.qualityBoxplot(
+        q = f.mapValue(key = avg);
+        xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+        );
       type = png
     );
-
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-best-test-arenas-avg-final.d.png";
+      plot = ea.plot.multi.yBoxplotExp(
+        y = f.avg(of = f.all(
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
+          fs = (of = (simulation = (environment = $testEnvs)
+          * [ds.sat.fromEnvironment()])
+          * [ds.f.simulate(dT = $dT; tRange = $tRange)])
+          * [ds.e.n.finalD()]
+        ));
+        xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      );
+      type = png
+    );
     ea.l.saveForRun(
-      path = $basePath + "{solver.name}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
+      path = $basePath + "{solver.name}-{solver.mapper.of.npnds.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
       of = ea.acc.lastBest();
       processor = viz.f.toMultiImage(
         drawer = ds.d.navigation();
