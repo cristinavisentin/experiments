@@ -1,0 +1,170 @@
+$basePath = ''./results/{^^.name}/{^^.startTime}/''
+
+$dT = 0.1
+$tRange = m.range(min = 0; max = 30)
+
+$emptyArena = ds.arena.prepared(
+  name = empty;
+  initialRobotXRange = m.range(min = 0.78; max = 0.8);
+  initialRobotYRange = m.range(min = 0.45; max = 0.5);
+  targetXRange = m.range(min = 0.2; max = 0.22);
+  targetYRange = m.range(min = 0.3; max = 0.6)
+)
+$a_barrierArena = ds.arena.prepared(
+  name = a_barrier;
+  initialRobotXRange = m.range(min = 0.45; max = 0.5);
+  initialRobotYRange = m.range(min = 0.78; max = 0.8)
+)
+$u_barrierArena = ds.arena.prepared(
+  name = u_barrier;
+  initialRobotXRange = m.range(min = 0.5; max = 0.5);
+  initialRobotYRange = m.range(min = 0.85; max = 0.85)
+)
+$deceptive_mazeArena = ds.arena.prepared(
+  name = deceptive_maze;
+  initialRobotXRange = m.range(min = 0.9; max = 0.95);
+  initialRobotYRange = m.range(min = 0.9; max = 0.95);
+  targetXRange = m.range(min = 0.1; max = 0.12);
+  targetYRange = m.range(min = 0.1; max = 0.12)
+)
+$deceptive_corridorArena = ds.arena.fromString(
+  name = "deceptive-corridor";
+  s = "s            |             |             |wwww     wwww             |   w w w w   |   w w w w   |   w w w w   |   w w w w   |   www w w   |   w   w w   |wwww   wwwwww|             |           t "
+)
+
+$learningEnvs = (arena = [
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $emptyArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $a_barrierArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena;
+  $deceptive_mazeArena
+])
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$testKnownEnvs = (arena = [
+  $emptyArena;
+  $a_barrierArena;
+  $deceptive_mazeArena
+])
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$testEnvs = (arena = [
+  $emptyArena;
+  $a_barrierArena;
+  $deceptive_mazeArena;
+  $u_barrierArena;
+  $deceptive_corridorArena
+])
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironment(
+  environment = ds.e.navigation(arena = ds.arena.prepared(name = empty));
+  reward = ds.e.nav.reward.reaching()
+))
+
+$noInnerLayers = []
+$innerLayers = [8]
+$twoInnerLayers = [8; 8]
+
+$MLP = [
+    ds.num.mlp(name = ''mlp''; innerLayers = $noInnerLayers); 
+    ds.num.mlp(name = ''mlp''; innerLayers = $innerLayers);
+    ds.num.mlp(name = ''mlp''; innerLayers = $twoInnerLayers)
+]
+
+$HEBBIAN = (parametrizationType = [network; layer; neuron; synapse])
+* (weightInitializationType = [zeros; random; params])
+* [
+    ds.num.hebbianMlp(name = ''hebbian-{parametrizationType}-{weightInitializationType}''; innerLayers = $noInnerLayers); 
+    ds.num.hebbianMlp(name = ''hebbian-{parametrizationType}-{weightInitializationType}''; innerLayers = $innerLayers);
+    ds.num.hebbianMlp(name = ''hebbian-{parametrizationType}-{weightInitializationType}''; innerLayers = $twoInnerLayers)
+]
+
+ea.experiment(
+  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 300))
+  * (representation = [ea.representation.doubleString()])
+  * (mapper = 
+    (of = (npnds = $MLP + $HEBBIAN) * [ea.mapper.dsToNpnds()])
+    * [ea.mapper.ndsToNrla(name = ''{of.npnds.name}'')]
+  )
+  * [ea.s.ga(name = ''ga+{mapper.name}'')
+  ])
+  * (problem = [
+    ea.p.functionsToScbmo(
+      cases = (of = (simulation = (environment = $learningEnvs)
+      * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
+      * [ds.f.simulate(dT = $dT; tRange = $tRange)])
+      * [ds.f.cumulatedReward()];
+      example = $exampleRLagent;
+      toMaxObjectives = [f.as(of = f.avg(); name = avg)]
+    )
+  ])
+  * [ea.run()];
+  listeners = [
+    ea.l.console(
+      eFunctions = [
+        ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+        f.mapValue(key = avg; of = ea.f.quality(of = ea.f.best()); format = "%6.1f")
+      ];
+      kFunctions = [
+        f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      ];
+      onlyLast = false
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "best-fitness.png";
+      plot = ea.plot.multi.quality(
+        q = f.mapValue(key = avg);
+        ySubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      );
+      type = png
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-best-fitness.png";
+      plot = ea.plot.multi.qualityBoxplot(
+        q = f.mapValue(key = avg);
+        xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+        );
+      type = png
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-best-test-arenas-avg-final.d.png";
+      plot = ea.plot.multi.yBoxplotExp(
+        y = f.avg(of = f.all(
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
+          fs = (of = (simulation = (environment = $testEnvs)
+          * [ds.sat.fromEnvironment()])
+          * [ds.f.simulate(dT = $dT; tRange = $tRange)])
+          * [ds.e.n.finalD()]
+        ));
+        xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.npnds.innerLayers}")
+      );
+      type = png
+    );
+    ea.l.saveForRun(
+      path = $basePath + "{solver.name}-{solver.mapper.of.npnds.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
+      of = ea.acc.lastBest();
+      processor = viz.f.toMultiImage(
+        drawer = ds.d.navigation();
+        of = f.all(
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
+          fs = (simulation = (environment = $testEnvs)
+          * [ds.sat.fromEnvironment()])
+          * [ds.f.simulate(dT = $dT; tRange = $tRange)]
+        );
+        type = png
+      )
+    )
+  ]
+)
