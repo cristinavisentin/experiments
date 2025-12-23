@@ -75,7 +75,7 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
 $innerLayers = [8]
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
+  runs = (randomGenerator = (seed = [1:1:30]) * [m.defaultRG()])
   * (problem = [
     ea.p.functionsToScbmo(
       cases = (of = (simulation = (environment = $learningEnvs)
@@ -86,7 +86,7 @@ ea.experiment(
       toMaxObjectives = [f.as(of = f.avg(); name = avg)]
     )
   ])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 300)) * [
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 25000)) * [
     ea.s.ga(
       name = "mlp";
       representation = ea.representation.doubleString();
@@ -96,6 +96,31 @@ ea.experiment(
       name = "hebbian+synapse+params";
       representation = ea.representation.doubleString();
       mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = params)))
+    );
+    ea.s.ga(
+      name = "hebbian+synapse+random";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random)))
+    );
+    ea.s.ga(
+      name = "hebbian+synapse+zeros";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = zeros)))
+    );
+    ea.s.ga(
+      name = "hebbian+network+params";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = params)))
+    );
+    ea.s.ga(
+      name = "hebbian+network+random";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random)))
+    );
+    ea.s.ga(
+      name = "hebbian+network+zeros";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = zeros)))
     );
     ea.s.ga(
       name = "freeForm+zeros";
