@@ -1,4 +1,4 @@
-$basePath = ''./results/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/local/{^^.name}/{^^.startTime}/''
 
 $dT = 0.1
 $tRange = m.range(min = 0; max = 30)
@@ -72,10 +72,10 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
   reward = ds.e.nav.reward.reaching()
 ))
 
-$innerLayers = [8]
+$innerLayers = []
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:30]) * [m.defaultRG()])
+  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
   * (problem = [
     ea.p.functionsToScbmo(
       cases = (of = (simulation = (environment = $learningEnvs)
@@ -86,7 +86,7 @@ ea.experiment(
       toMaxObjectives = [f.as(of = f.avg(); name = avg)]
     )
   ])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 25000)) * [
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 300)) * [
     ea.s.ga(
       name = "mlp";
       representation = ea.representation.doubleString();
