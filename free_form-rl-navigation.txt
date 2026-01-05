@@ -72,7 +72,7 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
   reward = ds.e.nav.reward.reaching()
 ))
 
-$innerLayers = []
+$innerLayers = [8]
 
 ea.experiment(
   runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
