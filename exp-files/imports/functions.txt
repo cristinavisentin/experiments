@@ -1,0 +1,4 @@
+$lastFourCRF = f.as(
+  name = "bqs_ecra";
+  of = f.avg(of = f.each(mapF = ds.f.cumulatedReward(); of = f.subList(from = 20; to = 24; relative = false)); format = "%5.1f")
+)

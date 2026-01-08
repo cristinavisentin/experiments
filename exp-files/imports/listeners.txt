@@ -1,0 +1,41 @@
+$basePath = ''./results/local/{^^.name}/{^^.startTime}/''
+$imgType = svg
+
+$console = ea.l.console(
+  eFunctions = [
+    ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $lastFourCRF);
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaIncreaseCRF)
+  ];
+  kFunctions = [
+    f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  ];
+  onlyLast = false
+)
+
+$bestFitness = ea.l.savePlotForExp(
+  path = $basePath + "best-fitness." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = $lastFourCRF;
+    ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)
+
+$bestFitnessBoxplot = ea.l.savePlotForExp(
+  path = $basePath + "boxplot-best-fitness." + $imgType;
+  plot = ea.plot.multi.qualityBoxplot(
+    q = $lastFourCRF;
+    xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+    );
+  type = $imgType
+)
+
+$bestLearning = ea.l.savePlotForExp(
+  path = $basePath + "best-learning." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = $arenaIncreaseCRF;
+    ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)

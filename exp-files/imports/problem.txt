@@ -1,0 +1,17 @@
+$trainEnviroment = (arena = $trainArenas)
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$simToTo = ea.p.simToTo(
+  dT = $dT;
+  tRange = $tRange;
+  qFunction = f.identity();
+  comparator = ea.comparator.descending(of = ds.f.cumulatedReward())
+)
+
+$problem = ea.p.manyToCbto(
+  name = "train";
+  problems = (simulation = (environment = $trainEnviroment)
+  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
+  * [$simToTo];
+  comparator = ea.comparator.descending(of = $lastFourCRF)
+)
