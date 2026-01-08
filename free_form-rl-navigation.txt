@@ -1,70 +1,16 @@
 $basePath = ''./results/local/{^^.name}/{^^.startTime}/''
 
 $dT = 0.1
-$tRange = m.range(min = 0; max = 30)
+$tRange = m.range(min = 0; max = 60)
+$innerLayers = [8; 8; 8]
+$weightsUpdateInterval = 5
 
-$emptyArena = ds.arena.prepared(
-  name = empty;
-  initialRobotXRange = m.range(min = 0.78; max = 0.8);
-  initialRobotYRange = m.range(min = 0.45; max = 0.5);
-  targetXRange = m.range(min = 0.2; max = 0.22);
-  targetYRange = m.range(min = 0.3; max = 0.6)
-)
-$a_barrierArena = ds.arena.prepared(
-  name = a_barrier;
-  initialRobotXRange = m.range(min = 0.45; max = 0.5);
-  initialRobotYRange = m.range(min = 0.78; max = 0.8)
-)
-$u_barrierArena = ds.arena.prepared(
-  name = u_barrier;
-  initialRobotXRange = m.range(min = 0.5; max = 0.5);
-  initialRobotYRange = m.range(min = 0.85; max = 0.85)
-)
-$deceptive_mazeArena = ds.arena.prepared(
-  name = deceptive_maze;
-  initialRobotXRange = m.range(min = 0.9; max = 0.95);
-  initialRobotYRange = m.range(min = 0.9; max = 0.95);
-  targetXRange = m.range(min = 0.1; max = 0.12);
-  targetYRange = m.range(min = 0.1; max = 0.12)
-)
-$deceptive_corridorArena = ds.arena.fromString(
-  name = "deceptive-corridor";
-  s = "s            |             |             |wwww     wwww             |   w w w w   |   w w w w   |   w w w w   |   w w w w   |   www w w   |   w   w w   |wwww   wwwwww|             |           t "
-)
+@import("arenas.txt")
 
-$learningEnvs = (arena = [
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena
-])
+$trainEnviroment = (arena = $trainArenas)
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
-$testKnownEnvs = (arena = [
-  $emptyArena;
-  $a_barrierArena;
-  $deceptive_mazeArena
-])
-* [ds.e.navigation(randomGenerator = m.sharedRG())]
-
-$testEnvs = (arena = [
-  $emptyArena;
-  $a_barrierArena;
-  $deceptive_mazeArena;
-  $u_barrierArena;
-  $deceptive_corridorArena
-])
+$testEnviroment = (arena = $testArenas)
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
 $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironment(
@@ -72,21 +18,27 @@ $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironm
   reward = ds.e.nav.reward.reaching()
 ))
 
-$innerLayers = [8]
+$simToTo = ea.p.simToTo(
+  dT = $dT;
+  tRange = $tRange;
+  qFunction = f.identity();
+  comparator = ea.comparator.descending(of = ds.f.cumulatedReward())
+)
+
+$lastFourCRF = f.avg(of = f.each(mapF = ds.f.cumulatedReward(); of = f.subList(from = 20; to = 24; relative = false)); format = "%5.1f")
+
+$problem = ea.p.manyToCbto(
+  name = "train";
+  problems = (simulation = (environment = $trainEnviroment)
+  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
+  * [$simToTo];
+  comparator = ea.comparator.descending(of = $lastFourCRF)
+)
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
-  * (problem = [
-    ea.p.functionsToScbmo(
-      cases = (of = (simulation = (environment = $learningEnvs)
-      * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
-      * [ds.f.simulate(dT = $dT; tRange = $tRange)])
-      * [ds.f.cumulatedReward()];
-      example = $exampleRLagent;
-      toMaxObjectives = [f.as(of = f.avg(); name = avg)]
-    )
-  ])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 300)) * [
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
+  * (problem = $problem)
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.ga(
       name = "mlp";
       representation = ea.representation.doubleString();
@@ -95,42 +47,42 @@ ea.experiment(
     ea.s.ga(
       name = "hebbian+synapse+params";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = params)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = params; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "hebbian+synapse+random";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "hebbian+synapse+zeros";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = zeros)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = zeros; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "hebbian+network+params";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = params)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = params; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "hebbian+network+random";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "hebbian+network+zeros";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = zeros)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = zeros; weightsUpdateInterval = $weightsUpdateInterval)))
     );
     ea.s.ga(
       name = "freeForm+zeros";
       representation = ea.representation.srTree();
-      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = zeros))
+      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = zeros; weightsUpdateInterval = $weightsUpdateInterval))
     );
     ea.s.ga(
       name = "freeForm+random";
       representation = ea.representation.srTree();
-      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random))
+      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval))
     )
   ])
   * [ea.run()];
@@ -138,7 +90,7 @@ ea.experiment(
     ea.l.console(
       eFunctions = [
         ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-        f.mapValue(key = avg; of = ea.f.quality(of = ea.f.best()); format = "%6.1f")
+        f.composition(of = ea.f.quality(of = ea.f.best()); then = $lastFourCRF)
       ];
       kFunctions = [
         f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
@@ -148,7 +100,7 @@ ea.experiment(
     ea.l.savePlotForExp(
       path = $basePath + "best-fitness.png";
       plot = ea.plot.multi.quality(
-        q = f.mapValue(key = avg);
+        q = $lastFourCRF;
         ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
       );
       type = png
@@ -156,7 +108,7 @@ ea.experiment(
     ea.l.savePlotForExp(
       path = $basePath + "boxplot-best-fitness.png";
       plot = ea.plot.multi.qualityBoxplot(
-        q = f.mapValue(key = avg);
+        q = $lastFourCRF;
         xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
         );
       type = png
@@ -166,7 +118,7 @@ ea.experiment(
       plot = ea.plot.multi.yBoxplotExp(
         y = f.avg(of = f.all(
           of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
-          fs = (of = (simulation = (environment = $testEnvs)
+          fs = (of = (simulation = (environment = $testEnviroment)
           * [ds.sat.fromEnvironment()])
           * [ds.f.simulate(dT = $dT; tRange = $tRange)])
           * [ds.e.n.finalD()]
@@ -182,7 +134,7 @@ ea.experiment(
         drawer = ds.d.navigation();
         of = f.all(
           of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
-          fs = (simulation = (environment = $testEnvs)
+          fs = (simulation = (environment = $testEnviroment)
           * [ds.sat.fromEnvironment()])
           * [ds.f.simulate(dT = $dT; tRange = $tRange)]
         );
