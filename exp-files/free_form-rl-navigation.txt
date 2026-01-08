@@ -109,7 +109,7 @@ ea.experiment(
       onlyLast = false
     );
     ea.l.savePlotForExp(
-      path = $basePath + "best-fitness." + $imgType;
+      path = $basePath + "finalCRF." + $imgType;
       plot = ea.plot.multi.quality(
         q = $lastFourCRF;
         ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
@@ -117,11 +117,43 @@ ea.experiment(
       type = $imgType
     );
     ea.l.savePlotForExp(
-      path = $basePath + "boxplot-best-fitness." + $imgType;
+      path = $basePath + "boxplot-finalCRF." + $imgType;
       plot = ea.plot.multi.qualityBoxplot(
         q = $lastFourCRF;
         xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-        );
+      );
+      type = $imgType
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "increaseCRF." + $imgType;
+      plot = ea.plot.multi.quality(
+        q = $arenaIncreaseCRF;
+        ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+      );
+      type = $imgType
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-increaseCRF." + $imgType;
+      plot = ea.plot.multi.qualityBoxplot(
+        q = $arenaIncreaseCRF;
+        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+      );
+      type = $imgType
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "consistencyCRF." + $imgType;
+      plot = ea.plot.multi.quality(
+        q = $arenaConsistencyCRF;
+        ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+      );
+      type = $imgType
+    );
+    ea.l.savePlotForExp(
+      path = $basePath + "boxplot-consistencyCRF." + $imgType;
+      plot = ea.plot.multi.qualityBoxplot(
+        q = $arenaConsistencyCRF;
+        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+      );
       type = $imgType
     );
     ea.l.savePlotForExp(
