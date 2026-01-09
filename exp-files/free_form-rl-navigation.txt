@@ -1,73 +1,14 @@
-$basePath = ''./results/local/{^^.name}/{^^.startTime}/''
-$imgType = svg
 $dT = 0.1
 $tRange = m.range(min = 0; max = 60)
 
+@import("imports/functions.txt")
 @import("imports/arenas.txt")
+@import("imports/problem.txt")
+@import("imports/listeners.txt")
 
 $innerLayers = [8; 8; 8]
 $weightsUpdateInterval = 5
 $initialWeightRange = m.range(min = -0.01; max = 0.01)
-
-$testEnviroment = (arena = $testArenas)
-* [ds.e.navigation(randomGenerator = m.sharedRG())]
-
-$trainEnviroment = (arena = $trainArenas)
-* [ds.e.navigation(randomGenerator = m.sharedRG())]
-
-$allCRF = f.cached(of = f.each(mapF = ds.f.cumulatedReward()))
-
-$lastFourCRF = f.as(
-  name = "final";
-  of = f.avg(of = f.subList(from = 20; to = 24; relative = false; of = $allCRF); format = "%5.1f")
-)
-
-$arenaIncreaseCRF = f.as(
-  name = "increase";
-  of = f.avg(
-    of = f.all(
-      of = $allCRF;
-      fs = [
-        f.mathOp(op = subtract; args = [f.nTh(n = 4); f.nTh(n = 0)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 9); f.nTh(n = 5)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 14); f.nTh(n = 10)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 19); f.nTh(n = 15)])
-      ]
-    );
-    format = "%5.1f"
-  )
-)
-
-$arenaConsistencyCRF = f.as(
-  name = "consistency";
-  of = f.avg(
-    of = f.all(
-      of = $allCRF;
-      fs = [
-        f.mathOp(op = subtract; args = [f.nTh(n = 20); f.nTh(n = 4)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 21); f.nTh(n = 9)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 22); f.nTh(n = 14)]);
-        f.mathOp(op = subtract; args = [f.nTh(n = 23); f.nTh(n = 19)])
-      ]
-    );
-    format = "%5.1f"
-  )
-)
-
-$simToTo = ea.p.simToTo(
-  dT = $dT;
-  tRange = $tRange;
-  qFunction = f.identity();
-  comparator = ea.comparator.descending(of = ds.f.cumulatedReward())
-)
-
-$problem = ea.p.manyToCbto(
-  name = "train";
-  problems = (simulation = (environment = $trainEnviroment)
-  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
-  * [$simToTo];
-  comparator = ea.comparator.descending(of = $lastFourCRF)
-)
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
@@ -96,93 +37,11 @@ ea.experiment(
   ])
   * [ea.run()];
   listeners = [
-    ea.l.console(
-      eFunctions = [
-        ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-        f.composition(of = ea.f.quality(of = ea.f.best()); then = $lastFourCRF);
-        f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaIncreaseCRF);
-        f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaConsistencyCRF)
-      ];
-      kFunctions = [
-        f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      ];
-      onlyLast = false
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "finalCRF." + $imgType;
-      plot = ea.plot.multi.quality(
-        q = $lastFourCRF;
-        ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "boxplot-finalCRF." + $imgType;
-      plot = ea.plot.multi.qualityBoxplot(
-        q = $lastFourCRF;
-        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "increaseCRF." + $imgType;
-      plot = ea.plot.multi.quality(
-        q = $arenaIncreaseCRF;
-        ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "boxplot-increaseCRF." + $imgType;
-      plot = ea.plot.multi.qualityBoxplot(
-        q = $arenaIncreaseCRF;
-        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "consistencyCRF." + $imgType;
-      plot = ea.plot.multi.quality(
-        q = $arenaConsistencyCRF;
-        ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "boxplot-consistencyCRF." + $imgType;
-      plot = ea.plot.multi.qualityBoxplot(
-        q = $arenaConsistencyCRF;
-        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.savePlotForExp(
-      path = $basePath + "boxplot-best-test-arenas-avg-final.d." + $imgType;
-      plot = ea.plot.multi.yBoxplotExp(
-        y = f.avg(of = f.all(
-          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
-          fs = (of = (simulation = (environment = $testEnviroment)
-          * [ds.sat.fromEnvironment()])
-          * [ds.f.simulate(dT = $dT; tRange = $tRange)])
-          * [ds.e.n.finalD()]
-        ));
-        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-      );
-      type = $imgType
-    );
-    ea.l.saveForRun(
-      path = $basePath + "{solver.name}-{solver.mapper.of.parametrized.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}." + $imgType;
-      of = ea.acc.lastBest();
-      processor = viz.f.toMultiImage(
-        drawer = ds.d.navigation();
-        of = f.all(
-          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
-          fs = (simulation = (environment = $testEnviroment)
-          * [ds.sat.fromEnvironment()])
-          * [ds.f.simulate(dT = $dT; tRange = $tRange)]
-        );
-        type = $imgType
-      )
-    )
+    $console; 
+    $finalCRF; $finalCRFBoxplot;
+    $increaseCRF; $increaseCRFBoxplot;
+    $consistencyCRF; $consistencyCRFBoxplot;
+    $boxplotFinalDist;
+    $drawTrajectories
   ]
 )

@@ -1,4 +1,38 @@
+$allCRF = f.cached(of = f.each(mapF = ds.f.cumulatedReward()))
+
 $lastFourCRF = f.as(
-  name = "bqs_ecra";
-  of = f.avg(of = f.each(mapF = ds.f.cumulatedReward(); of = f.subList(from = 20; to = 24; relative = false)); format = "%5.1f")
+  name = "final";
+  of = f.avg(of = f.subList(from = 20; to = 24; relative = false; of = $allCRF); format = "%5.1f")
+)
+
+$arenaIncreaseCRF = f.as(
+  name = "increase";
+  of = f.avg(
+    of = f.all(
+      of = $allCRF;
+      fs = [
+        f.mathOp(op = subtract; args = [f.nTh(n = 4); f.nTh(n = 0)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 9); f.nTh(n = 5)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 14); f.nTh(n = 10)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 19); f.nTh(n = 15)])
+      ]
+    );
+    format = "%5.1f"
+  )
+)
+
+$arenaConsistencyCRF = f.as(
+  name = "consistency";
+  of = f.avg(
+    of = f.all(
+      of = $allCRF;
+      fs = [
+        f.mathOp(op = subtract; args = [f.nTh(n = 20); f.nTh(n = 4)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 21); f.nTh(n = 9)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 22); f.nTh(n = 14)]);
+        f.mathOp(op = subtract; args = [f.nTh(n = 23); f.nTh(n = 19)])
+      ]
+    );
+    format = "%5.1f"
+  )
 )

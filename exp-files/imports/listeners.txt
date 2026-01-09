@@ -1,11 +1,15 @@
 $basePath = ''./results/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
+$testEnviroment = (arena = $testArenas)
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
     f.composition(of = ea.f.quality(of = ea.f.best()); then = $lastFourCRF);
-    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaIncreaseCRF)
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaIncreaseCRF);
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaConsistencyCRF)
   ];
   kFunctions = [
     f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
@@ -13,8 +17,8 @@ $console = ea.l.console(
   onlyLast = false
 )
 
-$bestFitness = ea.l.savePlotForExp(
-  path = $basePath + "best-fitness." + $imgType;
+$finalCRF = ea.l.savePlotForExp(
+  path = $basePath + "finalCRF." + $imgType;
   plot = ea.plot.multi.quality(
     q = $lastFourCRF;
     ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
@@ -22,20 +26,77 @@ $bestFitness = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$bestFitnessBoxplot = ea.l.savePlotForExp(
-  path = $basePath + "boxplot-best-fitness." + $imgType;
+$finalCRFBoxplot = ea.l.savePlotForExp(
+  path = $basePath + "boxplot-finalCRF." + $imgType;
   plot = ea.plot.multi.qualityBoxplot(
     q = $lastFourCRF;
     xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-    );
+  );
   type = $imgType
 )
 
-$bestLearning = ea.l.savePlotForExp(
-  path = $basePath + "best-learning." + $imgType;
+$increaseCRF = ea.l.savePlotForExp(
+  path = $basePath + "increaseCRF." + $imgType;
   plot = ea.plot.multi.quality(
     q = $arenaIncreaseCRF;
     ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
   );
   type = $imgType
+)
+
+$increaseCRFBoxplot = ea.l.savePlotForExp(
+  path = $basePath + "boxplot-increaseCRF." + $imgType;
+  plot = ea.plot.multi.qualityBoxplot(
+    q = $arenaIncreaseCRF;
+    xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)
+
+$consistencyCRF = ea.l.savePlotForExp(
+  path = $basePath + "consistencyCRF." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = $arenaConsistencyCRF;
+    ySubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)
+
+$consistencyCRFBoxplot = ea.l.savePlotForExp(
+  path = $basePath + "boxplot-consistencyCRF." + $imgType;
+  plot = ea.plot.multi.qualityBoxplot(
+    q = $arenaConsistencyCRF;
+    xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)
+
+$boxplotFinalDist = ea.l.savePlotForExp(
+  path = $basePath + "boxplot-best-test-arenas-avg-final.d." + $imgType;
+  plot = ea.plot.multi.yBoxplotExp(
+    y = f.avg(of = f.all(
+      of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
+      fs = (of = (simulation = (environment = $testEnviroment)
+      * [ds.sat.fromEnvironment()])
+      * [ds.f.simulate(dT = $dT; tRange = $tRange)])
+      * [ds.e.n.finalD()]
+    ));
+    xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  );
+  type = $imgType
+)
+
+$drawTrajectories = ea.l.saveForRun(
+  path = $basePath + "{solver.name}-{solver.mapper.of.parametrized.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toMultiImage(
+    drawer = ds.d.navigation();
+    of = f.all(
+      of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
+      fs = (simulation = (environment = $testEnviroment)
+      * [ds.sat.fromEnvironment()])
+      * [ds.f.simulate(dT = $dT; tRange = $tRange)]
+    );
+    type = $imgType
+  )
 )
