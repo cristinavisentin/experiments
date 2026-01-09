@@ -1,3 +1,5 @@
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals
+
 $dT = 0.1
 $tRange = m.range(min = 0; max = 60)
 
@@ -37,7 +39,7 @@ ea.experiment(
   ])
   * [ea.run()];
   listeners = [
-    $console; 
+    $console; $consoleCSV;
     $finalCRF; $finalCRFBoxplot;
     $increaseCRF; $increaseCRFBoxplot;
     $consistencyCRF; $consistencyCRFBoxplot;

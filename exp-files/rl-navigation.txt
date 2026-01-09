@@ -1,74 +1,43 @@
-$basePath = ''./results/{^^.name}/{^^.startTime}/''
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals
+
+$basePath = ''./results/local/{^^.name}/{^^.startTime}/''
+$imgType = svg
 
 $dT = 0.1
 $tRange = m.range(min = 0; max = 30)
 
-$emptyArena = ds.arena.prepared(
-  name = empty;
-  initialRobotXRange = m.range(min = 0.78; max = 0.8);
-  initialRobotYRange = m.range(min = 0.45; max = 0.5);
-  targetXRange = m.range(min = 0.2; max = 0.22);
-  targetYRange = m.range(min = 0.3; max = 0.6)
-)
-$a_barrierArena = ds.arena.prepared(
-  name = a_barrier;
-  initialRobotXRange = m.range(min = 0.45; max = 0.5);
-  initialRobotYRange = m.range(min = 0.78; max = 0.8)
-)
-$u_barrierArena = ds.arena.prepared(
-  name = u_barrier;
-  initialRobotXRange = m.range(min = 0.5; max = 0.5);
-  initialRobotYRange = m.range(min = 0.85; max = 0.85)
-)
-$deceptive_mazeArena = ds.arena.prepared(
-  name = deceptive_maze;
-  initialRobotXRange = m.range(min = 0.9; max = 0.95);
-  initialRobotYRange = m.range(min = 0.9; max = 0.95);
-  targetXRange = m.range(min = 0.1; max = 0.12);
-  targetYRange = m.range(min = 0.1; max = 0.12)
-)
-$deceptive_corridorArena = ds.arena.fromString(
-  name = "deceptive-corridor";
-  s = "s            |             |             |wwww     wwww             |   w w w w   |   w w w w   |   w w w w   |   w w w w   |   www w w   |   w   w w   |wwww   wwwwww|             |           t "
-)
+@import("imports/arenas.txt")
 
 $learningEnvs = (arena = [
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $emptyArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $a_barrierArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena;
-  $deceptive_mazeArena
-])
-* [ds.e.navigation(randomGenerator = m.sharedRG())]
-
-$testKnownEnvs = (arena = [
-  $emptyArena;
-  $a_barrierArena;
-  $deceptive_mazeArena
+  $empty;
+  $empty;
+  $empty;
+  $empty;
+  $empty;
+  $a_barrier;
+  $a_barrier;
+  $a_barrier;
+  $a_barrier;
+  $a_barrier;
+  $deceptive_maze;
+  $deceptive_maze;
+  $deceptive_maze;
+  $deceptive_maze;
+  $deceptive_maze
 ])
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
 $testEnvs = (arena = [
-  $emptyArena;
-  $a_barrierArena;
-  $deceptive_mazeArena;
-  $u_barrierArena;
-  $deceptive_corridorArena
+  $empty;
+  $a_barrier;
+  $deceptive_maze;
+  $u_barrier;
+  $deceptive_corridor
 ])
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
 
 $exampleRLagent = ds.misc.simExample(simulation = ds.srlat.fromNumericalEnvironment(
-  environment = ds.e.navigation(arena = ds.arena.prepared(name = empty));
+  environment = ds.e.navigation(arena = $empty);
   reward = ds.e.nav.reward.reaching()
 ))
 
@@ -91,8 +60,8 @@ $hebbian = (parametrizationType = [network; layer; neuron; synapse])
 ]
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:3]) * [m.defaultRG()])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 300))
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals))
   * (representation = [ea.representation.doubleString()])
   * (mapper = (of = 
       (parametrized = $mlp + $hebbian) 
@@ -121,27 +90,26 @@ ea.experiment(
       ];
       kFunctions = [
         f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}")
-      ];
-      onlyLast = false
+      ]
     );
     ea.l.savePlotForExp(
-      path = $basePath + "best-fitness.png";
+      path = $basePath + "best-fitness." + $imgType;
       plot = ea.plot.multi.quality(
         q = f.mapValue(key = avg);
         ySubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}")
       );
-      type = png
+      type = $imgType
     );
     ea.l.savePlotForExp(
-      path = $basePath + "boxplot-best-fitness.png";
+      path = $basePath + "boxplot-best-fitness." + $imgType;
       plot = ea.plot.multi.qualityBoxplot(
         q = f.mapValue(key = avg);
         xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}")
         );
-      type = png
+      type = $imgType
     );
     ea.l.savePlotForExp(
-      path = $basePath + "boxplot-best-test-arenas-avg-final.d.png";
+      path = $basePath + "boxplot-best-test-arenas-avg-final.d." + $imgType;
       plot = ea.plot.multi.yBoxplotExp(
         y = f.avg(of = f.all(
           of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
@@ -152,10 +120,10 @@ ea.experiment(
         ));
         xSubplot = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}")
       );
-      type = png
+      type = $imgType
     );
     ea.l.saveForRun(
-      path = $basePath + "{solver.name}-{solver.mapper.of.parametrized.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}.png";
+      path = $basePath + "{solver.name}-{solver.mapper.of.parametrized.innerLayers}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}." + $imgType;
       of = ea.acc.lastBest();
       processor = viz.f.toMultiImage(
         drawer = ds.d.navigation();
@@ -165,7 +133,7 @@ ea.experiment(
           * [ds.sat.fromEnvironment()])
           * [ds.f.simulate(dT = $dT; tRange = $tRange)]
         );
-        type = png
+        type = $imgType
       )
     )
   ]

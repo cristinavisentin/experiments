@@ -13,11 +13,23 @@ $console = ea.l.console(
   ];
   kFunctions = [
     f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
-  ];
-  onlyLast = false
+  ]
 )
 
-$finalCRF = ea.l.savePlotForExp(
+$consoleCSV = ea.l.csv(
+  path = $basePath + "output_console.csv";
+  eFunctions = [
+    ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $lastFourCRF);
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaIncreaseCRF);
+    f.composition(of = ea.f.quality(of = ea.f.best()); then = $arenaConsistencyCRF)
+  ];
+  kFunctions = [
+    f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  ]
+)
+
+$finalCRF = ea.l.savePlotAndCsvForExp(
   path = $basePath + "finalCRF." + $imgType;
   plot = ea.plot.multi.quality(
     q = $lastFourCRF;
@@ -26,7 +38,7 @@ $finalCRF = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$finalCRFBoxplot = ea.l.savePlotForExp(
+$finalCRFBoxplot = ea.l.savePlotAndCsvForExp(
   path = $basePath + "boxplot-finalCRF." + $imgType;
   plot = ea.plot.multi.qualityBoxplot(
     q = $lastFourCRF;
@@ -35,7 +47,7 @@ $finalCRFBoxplot = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$increaseCRF = ea.l.savePlotForExp(
+$increaseCRF = ea.l.savePlotAndCsvForExp(
   path = $basePath + "increaseCRF." + $imgType;
   plot = ea.plot.multi.quality(
     q = $arenaIncreaseCRF;
@@ -44,7 +56,7 @@ $increaseCRF = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$increaseCRFBoxplot = ea.l.savePlotForExp(
+$increaseCRFBoxplot = ea.l.savePlotAndCsvForExp(
   path = $basePath + "boxplot-increaseCRF." + $imgType;
   plot = ea.plot.multi.qualityBoxplot(
     q = $arenaIncreaseCRF;
@@ -53,7 +65,7 @@ $increaseCRFBoxplot = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$consistencyCRF = ea.l.savePlotForExp(
+$consistencyCRF = ea.l.savePlotAndCsvForExp(
   path = $basePath + "consistencyCRF." + $imgType;
   plot = ea.plot.multi.quality(
     q = $arenaConsistencyCRF;
@@ -62,7 +74,7 @@ $consistencyCRF = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$consistencyCRFBoxplot = ea.l.savePlotForExp(
+$consistencyCRFBoxplot = ea.l.savePlotAndCsvForExp(
   path = $basePath + "boxplot-consistencyCRF." + $imgType;
   plot = ea.plot.multi.qualityBoxplot(
     q = $arenaConsistencyCRF;
@@ -71,7 +83,7 @@ $consistencyCRFBoxplot = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$boxplotFinalDist = ea.l.savePlotForExp(
+$boxplotFinalDist = ea.l.savePlotAndCsvForExp(
   path = $basePath + "boxplot-best-test-arenas-avg-final.d." + $imgType;
   plot = ea.plot.multi.yBoxplotExp(
     y = f.avg(of = f.all(
