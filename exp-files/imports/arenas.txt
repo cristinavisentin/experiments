@@ -24,9 +24,22 @@ $deceptive_maze = ds.arena.prepared(
   targetXRange = m.range(min = 0.1; max = 0.12);
   targetYRange = m.range(min = 0.1; max = 0.12)
 )
-$deceptive_corridor = ds.arena.fromString(
+
+$corridorNW2SE = ds.arena.fromString(
   name = "deceptive-corridor";
-  s = "s            |             |             |wwww     wwww             |   w w w w   |   w w w w   |   w w w w   |   w w w w   |   www w w   |   w   w w   |wwww   wwwwww|             |           t "
+  s = "s            |" +
+      "             |" +
+      "             |" +
+      "wwww     wwww|" +
+      "   w w w w   |" +
+      "   w w w w   |" +
+      "   w w w w   |" +
+      "   w w w w   |" +
+      "   www w w   |" +
+      "   w   w w   |" +
+      "wwww   wwwwww|" +
+      "             |" +
+      "           t "
 )
 
 $trainArenas = [
@@ -61,5 +74,5 @@ $testArenas = [
   $a_barrier;
   $u_barrier;
   $deceptive_maze;
-  $deceptive_corridor
+  $corridorNW2SE
 ]
