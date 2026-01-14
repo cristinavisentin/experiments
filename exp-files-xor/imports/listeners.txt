@@ -1,3 +1,17 @@
 $basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
+$console = ea.l.console(
+  eFunctions = [
+    ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+    f.mapValue(key = avgLastBoolScore; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+  ]
+)
+
+$behavior = ea.l.savePlotForExp(
+  path = $basePath + "behavior." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = f.mapValue(key = behavior)
+  );
+  type = $imgType
+)

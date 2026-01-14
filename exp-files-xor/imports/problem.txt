@@ -1,1 +1,20 @@
-$problem = 
+$problem = ea.p.simToTo(
+  dT = 1;
+  tRange = 110;
+  simulation = ds.s.sequantialXor(
+    cases = ["00"];
+    rewardType = unlimited;
+    resetAgent = true
+  );
+  qFunction = f.allNamed(fs = m.sKeyMap(
+    keys = [behavior; avgLastBoolScore];
+    values = [
+      f.identity();
+      ds.e.sxor.avgError(
+        rewardType = boolean;
+        caseIndexes = [100:1:109]
+      )
+    ]
+  ));
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore))
+)

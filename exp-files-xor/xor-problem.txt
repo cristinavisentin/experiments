@@ -12,11 +12,29 @@ ea.experiment(
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.ga(
+      name = "mlp";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.mlp(innerLayers = $innerLayers)))
+    );
+    ea.s.ga(
+      name = "hebbian+synapse+random";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)))
+    );
+    ea.s.ga(
+      name = "hebbian+network+random";
+      representation = ea.representation.doubleString();
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)))
+    );
+    ea.s.ga(
       name = "freeForm+random";
       representation = ea.representation.srTree();
-      mapper = 
+      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange))
     )
   ])
   * [ea.run()];
-  listeners = []
+  listeners = [
+    $console;
+    $behavior
+  ]
 )
