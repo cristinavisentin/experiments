@@ -1,10 +1,12 @@
+$tRange = m.range(min = 0; max = 110)
+
 $problem = ea.p.simToTo(
+  name = "sequentialXor";
   dT = 1;
-  tRange = 110;
+  tRange = $tRange;
   simulation = ds.s.sequantialXor(
     cases = ["00"];
-    rewardType = unlimited;
-    resetAgent = true
+    rewardType = unlimited
   );
   qFunction = f.allNamed(fs = m.sKeyMap(
     keys = [behavior; avgLastBoolScore];

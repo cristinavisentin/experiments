@@ -11,7 +11,7 @@ $console = ea.l.console(
 $behavior = ea.l.savePlotForExp(
   path = $basePath + "behavior." + $imgType;
   plot = ea.plot.multi.quality(
-    q = f.mapValue(key = behavior)
+    q = f.mapValue(key = avgLastBoolScore)
   );
   type = $imgType
 )
