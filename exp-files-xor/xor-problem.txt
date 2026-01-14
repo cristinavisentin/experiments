@@ -1,0 +1,22 @@
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals
+
+@import("imports/problem.txt")
+@import("imports/listeners.txt")
+
+$innerLayers = [2]
+$weightsUpdateInterval = 1
+$initialWeightRange = m.range(min = -0.01; max = 0.01)
+
+ea.experiment(
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
+  * (problem = $problem)
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
+    ea.s.ga(
+      name = "freeForm+random";
+      representation = ea.representation.srTree();
+      mapper = 
+    )
+  ])
+  * [ea.run()];
+  listeners = []
+)
