@@ -1,22 +1,57 @@
-$tRange = m.range(min = 0; max = 110)
+$tRange = m.range(min = 0; max = 140)
 
-$problem = ea.p.simToTo(
-  name = "sequentialXor";
+$qFunction = f.allNamed(fs = m.sKeyMap(
+  keys = [behavior; avgLastBoolScore; increase; consistency];
+  values = [
+    f.identity();
+    ds.e.sxor.avgScore(
+      rewardType = boolean;
+      caseIndexes = [100:1:139]
+    );
+    ds.e.sxor.avgScoreDelta(
+      rewardType = unlimited;
+      firstIndexes = [0; 1];
+      secondIndexes = [-1; -2]
+    );
+    ds.e.sxor.avgScoreVariation(
+      rewardType = unlimited;
+      indexes = [-10:1:-1]
+    )
+  ]
+))
+
+$problemHomoSame = ea.p.simToTo(
+  name = "homo-same";
   dT = 1;
   tRange = $tRange;
   simulation = ds.s.sequantialXor(
-    cases = ["00"];
+    cases = 25 * ["00"] + 25 * ["01"] + 25 * ["10"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"];
     rewardType = unlimited
   );
-  qFunction = f.allNamed(fs = m.sKeyMap(
-    keys = [behavior; avgLastBoolScore];
-    values = [
-      f.identity();
-      ds.e.sxor.avgError(
-        rewardType = boolean;
-        caseIndexes = [100:1:109]
-      )
-    ]
-  ));
+  qFunction = $qFunction;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore))
+)
+
+$problemHomoDiff = ea.p.simToTo(
+  name = "homo-diff";
+  dT = 1;
+  tRange = $tRange;
+  simulation = ds.s.sequantialXor(
+    cases = 25 * ["10"] + 25 * ["00"] + 25 * ["11"] + 25 * ["01"] + 10 * ["00"; "01"; "10"; "11"];
+    rewardType = unlimited
+  );
+  qFunction = $qFunction;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore))
+)
+
+$problemHetero = ea.p.simToTo(
+  name = "hetero";
+  dT = 1;
+  tRange = $tRange;
+  simulation = ds.s.sequantialXor(
+    cases = 35 * ["00"; "01"; "10"; "11"];
+    rewardType = unlimited
+  );
+  qFunction = $qFunction;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore))
 )

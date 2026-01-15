@@ -3,14 +3,14 @@
 @import("imports/problem.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = [2]
+$innerLayers = []
 $weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.01; max = 0.01)
+$initialWeightRange = m.range(min = -0.0; max = 0.0)
 
 ea.experiment(
-  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
-  * (problem = $problem)
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
+  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
+  * (problem = [$problemHomoSame; $problemHomoDiff; $problemHetero])
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 5000)) * [
     ea.s.ga(
       name = "mlp";
       representation = ea.representation.doubleString();
@@ -28,13 +28,18 @@ ea.experiment(
     );
     ea.s.ga(
       name = "freeForm+random";
-      representation = ea.representation.srTree();
+      representation = ea.r.srTree(
+        ephemeral = true;
+        operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
+      );
       mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange))
     )
   ])
   * [ea.run()];
   listeners = [
     $console;
-    $behavior
+    $avgLastBoolScore;
+    $increase;
+    $consistency
   ]
 )
