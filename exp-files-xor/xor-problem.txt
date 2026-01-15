@@ -8,9 +8,9 @@ $weightsUpdateInterval = 1
 $initialWeightRange = m.range(min = -0.0; max = 0.0)
 
 ea.experiment(
-  runs = (randomGenerator = (seed = [1:1:1]) * [m.defaultRG()])
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
   * (problem = [$problemHomoSame; $problemHomoDiff; $problemHetero])
-  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = 5000)) * [
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.ga(
       name = "mlp";
       representation = ea.representation.doubleString();
@@ -40,6 +40,7 @@ ea.experiment(
     $console;
     $avgLastBoolScore;
     $increase;
-    $consistency
+    $consistency;
+    $behaviorLastSeq
   ]
 )

@@ -35,3 +35,23 @@ $consistency = ea.l.savePlotForExp(
   );
   type = $imgType
 )
+
+$behaviorLastSeq = ea.l.saveForRun(
+  path = $basePath + "{problem.name}-{solver.name}-{randomGenerator.seed:%02d}-behavior." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toImage(
+    drawer = ds.d.sequentialXor(
+      rewardTypes = [boolean]
+    ); 
+    of = ds.f.simulate(
+      of = ea.f.solution();
+      dT = 1;
+      tRange = $tRange;
+      simulation = ds.s.sequentialXor(
+        cases = $testCases;
+        rewardType = unlimited
+      )
+    ); 
+    type = $imgType
+  )
+)

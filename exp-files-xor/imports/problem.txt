@@ -1,4 +1,10 @@
 $tRange = m.range(min = 0; max = 140)
+$tRangeTest = m.range(min = 0; max = 40)
+
+$homoSameCases = 25 * ["00"] + 25 * ["01"] + 25 * ["10"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"]
+$homoDiffCases = 25 * ["10"] + 25 * ["00"] + 25 * ["11"] + 25 * ["01"] + 10 * ["00"; "01"; "10"; "11"]
+$heteroCases = 35 * ["00"; "01"; "10"; "11"]
+$testCases = 10 * ["00"; "01"; "10"; "11"]
 
 $qFunction = f.allNamed(fs = m.sKeyMap(
   keys = [behavior; avgLastBoolScore; increase; consistency];
@@ -24,8 +30,8 @@ $problemHomoSame = ea.p.simToTo(
   name = "homo-same";
   dT = 1;
   tRange = $tRange;
-  simulation = ds.s.sequantialXor(
-    cases = 25 * ["00"] + 25 * ["01"] + 25 * ["10"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"];
+  simulation = ds.s.sequentialXor(
+    cases = $homoSameCases;
     rewardType = unlimited
   );
   qFunction = $qFunction;
@@ -36,8 +42,8 @@ $problemHomoDiff = ea.p.simToTo(
   name = "homo-diff";
   dT = 1;
   tRange = $tRange;
-  simulation = ds.s.sequantialXor(
-    cases = 25 * ["10"] + 25 * ["00"] + 25 * ["11"] + 25 * ["01"] + 10 * ["00"; "01"; "10"; "11"];
+  simulation = ds.s.sequentialXor(
+    cases = $homoDiffCases;
     rewardType = unlimited
   );
   qFunction = $qFunction;
@@ -48,8 +54,8 @@ $problemHetero = ea.p.simToTo(
   name = "hetero";
   dT = 1;
   tRange = $tRange;
-  simulation = ds.s.sequantialXor(
-    cases = 35 * ["00"; "01"; "10"; "11"];
+  simulation = ds.s.sequentialXor(
+    cases = $heteroCases;
     rewardType = unlimited
   );
   qFunction = $qFunction;
