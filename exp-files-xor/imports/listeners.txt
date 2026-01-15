@@ -1,4 +1,4 @@
-$basePath = ''./results/xor/test/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -51,7 +51,8 @@ $behaviorLastSeq = ea.l.saveForRun(
         cases = $testCases;
         rewardType = unlimited
       )
-    ); 
+    );
+    h = 2;
     type = $imgType
   )
 )

@@ -3,9 +3,10 @@
 @import("imports/problem.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = []
+$innerLayers = [2]
 $weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.0; max = 0.0)
+$initialWeightRange = m.range(min = -0.1; max = 0.1)
+$randomGenerator = m.sharedRG()
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
@@ -19,12 +20,30 @@ ea.experiment(
     ea.s.ga(
       name = "hebbian+synapse+random";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
+        innerLayers = $innerLayers; 
+        parametrizationType = synapse; 
+        weightInitializationType = random; 
+        weightsUpdateInterval = $weightsUpdateInterval; 
+        initialWeightRange = $initialWeightRange;
+        randomGenerator = $randomGenerator
+        ))
+      );
+      remap = true
     );
     ea.s.ga(
       name = "hebbian+network+random";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)))
+      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
+        innerLayers = $innerLayers; 
+        parametrizationType = network; 
+        weightInitializationType = random; 
+        weightsUpdateInterval = $weightsUpdateInterval; 
+        initialWeightRange = $initialWeightRange;
+        randomGenerator = $randomGenerator
+        ))
+      );
+      remap = true
     );
     ea.s.ga(
       name = "freeForm+random";
@@ -32,7 +51,15 @@ ea.experiment(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
       );
-      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange))
+      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(
+        innerLayers = $innerLayers; 
+        weightInitializationType = random; 
+        weightsUpdateInterval = $weightsUpdateInterval; 
+        initialWeightRange = $initialWeightRange;
+        randomGenerator = $randomGenerator
+        )
+      );
+      remap = true
     )
   ])
   * [ea.run()];
