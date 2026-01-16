@@ -68,6 +68,7 @@ ea.experiment(
     $avgLastBoolScore;
     $increase;
     $consistency;
-    $behaviorLastSeq
+    $behaviorLastSeq;
+    $trajsAfterFreeze
   ]
 )

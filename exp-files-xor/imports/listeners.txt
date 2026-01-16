@@ -1,4 +1,4 @@
-$basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/prove/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -49,10 +49,33 @@ $behaviorLastSeq = ea.l.saveForRun(
       tRange = $tRange;
       simulation = ds.s.sequentialXor(
         cases = $testCases;
-        rewardType = unlimited
+        rewardType = unlimited;
+        resetAgent = true
       )
     );
-    h = 2;
+    h = 180;
+    type = $imgType
+  )
+)
+
+$trajsAfterFreeze = ea.l.saveForRun(
+  path = $basePath + "AF-" + "{problem.name}-{solver.name}-{randomGenerator.seed:%02d}-behavior." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toImage(
+    drawer = ds.d.sequentialXor(
+      rewardTypes = [boolean]
+    );
+    of = ds.f.simulate(
+      of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution())));
+      dT = 1;
+      tRange = $tRange;
+      simulation = ds.s.sequentialXor(
+        cases = $testCases;
+        rewardType = unlimited;
+        resetAgent = true
+      )
+    );
+    h = 180;
     type = $imgType
   )
 )
