@@ -3,7 +3,7 @@
 @import("imports/problem.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = [2; 2]
+$innerLayers = [2]
 $weightsUpdateInterval = 1
 $initialWeightRange = m.range(min = -0.01; max = 0.01)
 $randomGenerator = m.sharedRG()
