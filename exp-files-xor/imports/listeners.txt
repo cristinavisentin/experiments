@@ -12,6 +12,20 @@ $console = ea.l.console(
   onlyLast = true
 )
 
+$consoleCSV = ea.l.csv(
+  path = $basePath + "console.csv";
+  eFunctions = [
+    ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+    f.mapValue(key = avgLastBoolScore; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+    f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+    f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+  ];
+  kFunctions = [
+    f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+  ];
+  onlyLast = true
+)
+
 $avgLastBoolScore = ea.l.savePlotForExp(
   path = $basePath + "avgLastBoolScore." + $imgType;
   plot = ea.plot.multi.quality(

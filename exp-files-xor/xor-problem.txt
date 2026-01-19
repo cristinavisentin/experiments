@@ -6,7 +6,6 @@
 $innerLayers = [2]
 $weightsUpdateInterval = 1
 $initialWeightRange = m.range(min = -0.01; max = 0.01)
-$randomGenerator = m.sharedRG()
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
@@ -25,8 +24,7 @@ ea.experiment(
         parametrizationType = synapse; 
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
-        initialWeightRange = $initialWeightRange;
-        randomGenerator = $randomGenerator
+        initialWeightRange = $initialWeightRange
         ))
       );
       remap = true
@@ -39,8 +37,7 @@ ea.experiment(
         parametrizationType = network; 
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
-        initialWeightRange = $initialWeightRange;
-        randomGenerator = $randomGenerator
+        initialWeightRange = $initialWeightRange
         ))
       );
       remap = true
@@ -55,8 +52,7 @@ ea.experiment(
         innerLayers = $innerLayers; 
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
-        initialWeightRange = $initialWeightRange;
-        randomGenerator = $randomGenerator
+        initialWeightRange = $initialWeightRange
         )
       );
       remap = true
@@ -65,6 +61,7 @@ ea.experiment(
   * [ea.run()];
   listeners = [
     $console;
+    $consoleCSV;
     $avgLastBoolScore;
     $increase;
     $consistency;
