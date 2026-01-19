@@ -1,6 +1,11 @@
 $basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
+$tRangeTest = m.range(min = 0; max = 40)
+
+$testCases = 10 * ["00"; "01"; "10"; "11"]
+$testDiffCases = 5 * ["10"; "00"; "11"; "01"] + 5 * ["00"; "01"; "10"; "11"]
+
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
