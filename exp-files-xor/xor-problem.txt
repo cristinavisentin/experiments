@@ -3,9 +3,9 @@
 @import("imports/problem.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = [2]
+$innerLayers = [2; 2]
 $weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.1; max = 0.1)
+$initialWeightRange = m.range(min = -0.01; max = 0.01)
 $randomGenerator = m.sharedRG()
 
 ea.experiment(
@@ -69,6 +69,9 @@ ea.experiment(
     $increase;
     $consistency;
     $behaviorLastSeq;
-    $trajsAfterFreeze
+    $trajsAfterFreeze;
+    $anotherLife;
+    $afterFreeze;
+    $stateTraj
   ]
 )

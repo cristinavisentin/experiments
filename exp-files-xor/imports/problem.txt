@@ -31,7 +31,7 @@ $problemHomoSame = ea.p.simToTo(
   dT = 1;
   tRange = $tRange;
   simulation = ds.s.sequentialXor(
-    cases = $testCases;
+    cases = $homoSameCases;
     rewardType = unlimited
   );
   qFunction = $qFunction;

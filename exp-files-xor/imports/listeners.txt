@@ -1,4 +1,4 @@
-$basePath = ''./results/xor/prove/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -37,16 +37,16 @@ $consistency = ea.l.savePlotForExp(
 )
 
 $behaviorLastSeq = ea.l.saveForRun(
-  path = $basePath + "{problem.name}-{solver.name}-{randomGenerator.seed:%02d}-behavior." + $imgType;
+  path = $basePath + "/behavior" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
     drawer = ds.d.sequentialXor(
-      rewardTypes = [boolean]
+      rewardTypes = [boolean; unlimited]
     ); 
     of = ds.f.simulate(
       of = ea.f.solution();
       dT = 1;
-      tRange = $tRange;
+      tRange = $tRangeTest;
       simulation = ds.s.sequentialXor(
         cases = $testCases;
         rewardType = unlimited;
@@ -59,23 +59,75 @@ $behaviorLastSeq = ea.l.saveForRun(
 )
 
 $trajsAfterFreeze = ea.l.saveForRun(
-  path = $basePath + "AF-" + "{problem.name}-{solver.name}-{randomGenerator.seed:%02d}-behavior." + $imgType;
+  path = $basePath + "/AF" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
-    drawer = ds.d.sequentialXor(
-      rewardTypes = [boolean]
-    );
+    drawer = ds.d.sequentialXor();
     of = ds.f.simulate(
       of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution())));
       dT = 1;
-      tRange = $tRange;
+      tRange = m.range(min = 0; max = 8);
       simulation = ds.s.sequentialXor(
-        cases = $testCases;
-        rewardType = unlimited;
-        resetAgent = true
+        cases = $testCases
       )
     );
     h = 180;
+    type = $imgType
+  )
+)
+
+$anotherLife = ea.l.savePlotForExp(
+  path = $basePath + "avgOnAnotherLife." + $imgType;
+  plot = ea.plot.multi.xyExp(
+    y = ds.e.sxor.avgScore(
+      rewardType = boolean;
+      caseIndexes = [-50:1:-1];
+      of = ds.f.simulate(
+        of = ea.f.solution(of = ea.f.best());
+        dT = 1;
+        tRange = m.range(min = 0; max = 190);
+        simulation = ds.s.sequentialXor(
+          cases = $heteroCases + $testCases + $testCases;
+          rewardType = unlimited;
+          resetAgent = true
+        )
+      )
+    )
+  );
+  type = $imgType
+)
+
+$afterFreeze = ea.l.savePlotForExp(
+  path = $basePath + "avgOnAfterFreeze." + $imgType;
+  plot = ea.plot.multi.xyExp(
+    y = ds.e.sxor.avgScore(
+      rewardType = boolean;
+      caseIndexes = [0:1:7];
+      of = ds.f.simulate(
+        of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best()))));
+        dT = 1;
+        tRange = m.range(min = 0; max = 8);
+        simulation = ds.s.sequentialXor(
+          cases = $testCases
+        )
+      )
+    )
+  );
+  type = $imgType
+)
+
+$stateTraj = ea.l.saveForRun(
+  path = $basePath + "/state" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toImage(
+    drawer = ds.d.vectorialTrajectory();
+    of = ds.f.agentStateTrajectory(
+      of = ea.f.solution();
+      stateF = ds.f.params();
+      sat = ds.s.sequentialXor(cases = $heteroCases; resetAgent = true);
+      dT = 1;
+      tRange = m.range(min = 0; max = 140)
+    );
     type = $imgType
   )
 )
