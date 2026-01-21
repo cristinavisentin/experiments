@@ -1,9 +1,9 @@
-% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals, $innerLayers
 
+@import("imports/cases.txt")
 @import("imports/problem.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = [2; 2]
 $weightsUpdateInterval = 1
 $initialWeightRange = m.range(min = -0.01; max = 0.01)
 
@@ -17,7 +17,7 @@ ea.experiment(
       mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.mlp(innerLayers = $innerLayers)))
     );
     ea.s.ga(
-      name = "hebbian+synapse+random";
+      name = "hebbian-synapse";
       representation = ea.representation.doubleString();
       mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
         innerLayers = $innerLayers; 
@@ -25,12 +25,11 @@ ea.experiment(
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
         initialWeightRange = $initialWeightRange
-        ))
-      );
+      )));
       remap = true
     );
     ea.s.ga(
-      name = "hebbian+network+random";
+      name = "hebbian-network";
       representation = ea.representation.doubleString();
       mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
         innerLayers = $innerLayers; 
@@ -38,12 +37,11 @@ ea.experiment(
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
         initialWeightRange = $initialWeightRange
-        ))
-      );
+      )));
       remap = true
     );
     ea.s.ga(
-      name = "freeForm+random";
+      name = "freeForm";
       representation = ea.r.srTree(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
@@ -53,8 +51,7 @@ ea.experiment(
         weightInitializationType = random; 
         weightsUpdateInterval = $weightsUpdateInterval; 
         initialWeightRange = $initialWeightRange
-        )
-      );
+      ));
       remap = true
     )
   ])
@@ -65,10 +62,9 @@ ea.experiment(
     $avgLastBoolScore;
     $increase;
     $consistency;
-    $behaviorLastSeq;
-    $trajsAfterFreeze;
-    $anotherLife;
-    $afterFreeze;
+    $frozenBehavior;
+    $frozenScore;
+    $longerLife;
     $stateTraj
   ]
 )

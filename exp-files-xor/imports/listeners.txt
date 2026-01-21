@@ -1,11 +1,6 @@
 $basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
-$tRangeTest = m.range(min = 0; max = 40)
-
-$testCases = 10 * ["00"; "01"; "10"; "11"]
-$testDiffCases = 5 * ["10"; "00"; "11"; "01"] + 5 * ["00"; "01"; "10"; "11"]
-
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
@@ -39,6 +34,14 @@ $avgLastBoolScore = ea.l.savePlotForExp(
   type = $imgType
 )
 
+$avgLastUnlimitedScore = ea.l.savePlotForExp(
+  path = $basePath + "avgLastUnlimitedScore." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = f.mapValue(key = avgLastUnlimitedScore)
+  );
+  type = $imgType
+)
+
 $increase = ea.l.savePlotForExp(
   path = $basePath + "increase." + $imgType;
   plot = ea.plot.multi.quality(
@@ -55,7 +58,7 @@ $consistency = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$behaviorLastSeq = ea.l.saveForRun(
+$anotherEOLSeqBehaviour = ea.l.saveForRun(
   path = $basePath + "/behavior" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
@@ -65,9 +68,9 @@ $behaviorLastSeq = ea.l.saveForRun(
     of = ds.f.simulate(
       of = ea.f.solution();
       dT = 1;
-      tRange = $tRangeTest;
+      tRange = $endOfLifeLength;
       simulation = ds.s.sequentialXor(
-        cases = $testDiffCases;
+        cases = $endOfLifeCases;
         rewardType = unlimited;
         resetAgent = true
       )
@@ -77,7 +80,7 @@ $behaviorLastSeq = ea.l.saveForRun(
   )
 )
 
-$trajsAfterFreeze = ea.l.saveForRun(
+$frozenBehavior = ea.l.saveForRun(
   path = $basePath + "/frozen" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
@@ -87,7 +90,8 @@ $trajsAfterFreeze = ea.l.saveForRun(
       dT = 1;
       tRange = m.range(min = 0; max = 8);
       simulation = ds.s.sequentialXor(
-        cases = $testCases
+        cases = $endOfLifeCases;
+        resetAgent = true
       )
     );
     h = 180;
@@ -95,19 +99,18 @@ $trajsAfterFreeze = ea.l.saveForRun(
   )
 )
 
-$anotherLife = ea.l.savePlotForExp(
-  path = $basePath + "avgOnAnotherLife." + $imgType;
+$frozenScore = ea.l.savePlotForExp(
+  path = $basePath + "frozenScore." + $imgType;
   plot = ea.plot.multi.xyExp(
     y = ds.e.sxor.avgScore(
-      rewardType = boolean;
-      caseIndexes = [-50:1:-1];
+      rewardType = unlimited;
+      caseIndexes = [0:1:7];
       of = ds.f.simulate(
-        of = ea.f.solution(of = ea.f.best());
+        of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best()))));
         dT = 1;
-        tRange = m.range(min = 0; max = 190);
+        tRange = m.range(min = 0; max = 8);
         simulation = ds.s.sequentialXor(
-          cases = $heteroCases + $testCases + $testCases;
-          rewardType = unlimited;
+          cases = $endOfLifeCases;
           resetAgent = true
         )
       )
@@ -116,18 +119,20 @@ $anotherLife = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$afterFreeze = ea.l.savePlotForExp(
-  path = $basePath + "avgOnAfterFreeze." + $imgType;
+$longerLife = ea.l.savePlotForExp(
+  path = $basePath + "avgOnAnotherLife." + $imgType;
   plot = ea.plot.multi.xyExp(
     y = ds.e.sxor.avgScore(
-      rewardType = boolean;
-      caseIndexes = [0:1:7];
+      rewardType = unlimited;
+      caseIndexes = [-50:1:-1];
       of = ds.f.simulate(
-        of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best()))));
+        of = ea.f.solution(of = ea.f.best());
         dT = 1;
-        tRange = m.range(min = 0; max = 8);
+        tRange = $longerLifeLength;
         simulation = ds.s.sequentialXor(
-          cases = $testCases
+          cases = $heteroCases + $endOfLifeCases + $endOfLifeCases;
+          rewardType = unlimited;
+          resetAgent = true
         )
       )
     )
@@ -143,9 +148,12 @@ $stateTraj = ea.l.saveForRun(
     of = ds.f.agentStateTrajectory(
       of = ea.f.solution();
       stateF = ds.f.params();
-      sat = ds.s.sequentialXor(cases = $heteroCases; resetAgent = true);
+      sat = ds.s.sequentialXor(
+        cases = $heteroCases; 
+        resetAgent = true
+      );
       dT = 1;
-      tRange = $tRange
+      tRange = $entireLifeLength
     );
     type = $imgType
   )

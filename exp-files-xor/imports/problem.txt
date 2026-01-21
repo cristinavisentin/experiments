@@ -1,25 +1,23 @@
-$tRange = m.range(min = 0; max = 140)
-
-$homoSameCases = 25 * ["00"] + 25 * ["01"] + 25 * ["10"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"]
-$homoDiffCases = 25 * ["10"] + 25 * ["00"] + 25 * ["11"] + 25 * ["01"] + 10 * ["00"; "01"; "10"; "11"]
-$heteroCases = 35 * ["00"; "01"; "10"; "11"]
-
 $qFunctions = f.allNamed(fs = m.sKeyMap(
-  keys = [behavior; avgLastBoolScore; increase; consistency];
+  keys = [behavior; avgLastBoolScore; avgLastUnlimitedScore; increase; consistency];
   values = [
     f.identity();
     ds.e.sxor.avgScore(
       rewardType = boolean;
-      caseIndexes = [100:1:139]
+      caseIndexes = [100:1:139]   % the last 40 cases
+    );
+    ds.e.sxor.avgScore(
+      rewardType = unlimited;
+      caseIndexes = [100:1:139]   % the last 40 cases
     );
     ds.e.sxor.avgScoreDelta(
       rewardType = unlimited;
-      firstIndexes = [-1; -2];
-      secondIndexes = [0; 1]
+      firstIndexes = [-4:1:-1];  % the last 4 cases
+      secondIndexes = [0:1:3]     % the first 4 cases
     );
     ds.e.sxor.avgScoreVariation(
       rewardType = unlimited;
-      indexes = [-10:1:-1]
+      indexes = [-8:1:-1]         % the last 8 cases
     )
   ]
 ))
@@ -28,10 +26,11 @@ $problemHomoSame = ea.p.simToTo(
   name = "homo-same";
   simulation = ds.s.sequentialXor(
     cases = $homoSameCases;
-    rewardType = unlimited
+    rewardType = unlimited;
+    resetAgent = true
   );
   dT = 1;
-  tRange = $tRange;
+  tRange = $entireLifeLength;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
@@ -40,10 +39,11 @@ $problemHomoDiff = ea.p.simToTo(
   name = "homo-diff";
   simulation = ds.s.sequentialXor(
     cases = $homoDiffCases;
-    rewardType = unlimited
+    rewardType = unlimited;
+    resetAgent = true
   );
   dT = 1;
-  tRange = $tRange;
+  tRange = $entireLifeLength;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
@@ -52,10 +52,11 @@ $problemHetero = ea.p.simToTo(
   name = "hetero";
   simulation = ds.s.sequentialXor(
     cases = $heteroCases;
-    rewardType = unlimited
+    rewardType = unlimited;
+    resetAgent = true
   );
   dT = 1;
-  tRange = $tRange;
+  tRange = $entireLifeLength;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
