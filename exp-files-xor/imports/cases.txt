@@ -9,3 +9,9 @@ $longerLifeLength = m.range(min = 0; max = 190)
 $entireLifeLength = m.range(min = 0; max = 140)
 
 $endOfLifeLength = m.range(min = 0; max = 40)
+
+
+$cases = 100 * ["00"] + 100 * ["01"] + 100 * ["10"] + 100 * ["11"]
+$tRangeLife = m.range(min = 0; max = 400)
+$tRangeDoubleLife = m.range(min = 0; max = 800)
+$tRangeForFreeze = m.range(min = 0; max = 8)
