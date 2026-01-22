@@ -1,4 +1,4 @@
-$basePath = ''./results/xor/local/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/final/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
