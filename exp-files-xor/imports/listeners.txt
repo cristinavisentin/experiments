@@ -58,6 +58,14 @@ $consistency = ea.l.savePlotForExp(
   type = $imgType
 )
 
+$frozen = ea.l.savePlotForExp(
+  path = $basePath + "frozen." + $imgType;
+  plot = ea.plot.multi.quality(
+    q = f.mapValue(key = frozenScore)
+  );
+  type = $imgType
+)
+
 $frozenBehavior = ea.l.saveForRun(
   path = $basePath + "/frozen" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();

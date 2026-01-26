@@ -9,7 +9,7 @@ $initialWeightRange = m.range(min = -0.01; max = 0.01)
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
-  * (problem = [$problem])
+  * (problem = [$problemFFF])
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.ga(
       name = "mlp";
@@ -62,7 +62,7 @@ ea.experiment(
     $avgLastBoolScore;
     $increase;
     $consistency;
-    $frozenScore;
+    $frozen;
     $longerLife;
     $stateTraj
   ]
