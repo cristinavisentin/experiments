@@ -148,3 +148,13 @@ $stateTraj = ea.l.saveForRun(
     type = $imgType
   )
 )
+
+$archivesP = ea.l.savePlotForRun(
+  path = $basePath + "{solver.name}-{randomGenerator.seed:%02d}/{problem.name}/me-archives." + $imgType;
+  plot = ea.plot.single.me(values = [
+    f.mapValue(key = frozenScore; of = ea.f.quality());
+    f.mapValue(key = avgLastBoolScore; of = ea.f.quality())
+  ]);
+  kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = "me.*");
+  type = $imgType
+)
