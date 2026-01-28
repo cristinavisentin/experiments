@@ -2,6 +2,7 @@
 
 @import("imports/cases.txt")
 @import("imports/problem.txt")
+%@import("imports/problemFF.txt")
 @import("imports/listeners.txt")
 
 $weightsUpdateInterval = 1
@@ -29,12 +30,13 @@ $freeFormMapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametr
     innerLayers = $innerLayers; 
     weightInitializationType = random; 
     weightsUpdateInterval = $weightsUpdateInterval; 
-    initialWeightRange = $initialWeightRange
+    initialWeightRange = $initialWeightRange;
+    historyLength = 1
 ))
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
-  * (problem = [$problemFFF])
+  * (problem = [$problem])
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
       name = "me-hebbian-synapse";
@@ -55,6 +57,7 @@ ea.experiment(
       representation = ea.r.srTree(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
+        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation"
       );
       mapper = $freeFormMapper;
       descriptors = [$dIncrease; $dConsistency];
@@ -68,7 +71,8 @@ ea.experiment(
     $avgLastBoolScore;
     $increase;
     $consistency;
-    $frozen;
+    %$frozen;
+    $frozenScore;
     $longerLife;
     $stateTraj;
     $archivesP

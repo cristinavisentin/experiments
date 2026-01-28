@@ -1,3 +1,5 @@
+$fitnessType = avgLastBoolScore
+
 $qFunctions = f.allNamed(fs = m.sKeyMap(
   keys = [behavior; avgLastBoolScore; increase; consistency];
   values = [
@@ -18,76 +20,8 @@ $qFunctions = f.allNamed(fs = m.sKeyMap(
   ]
 ))
 
-$testSim = ds.f.simulate(
-  of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning()));
-  dT = 1;
-  tRange = $tRangeForFreeze;
-  simulation = ds.s.sequentialXor(
-    cases = $testCases;
-    resetAgent = true;
-    shuffle = true
-  )
-)
-
-$learningSim = ds.f.simulate(
-  name = "test-sim";
-  dT = 1;
-  tRange = $tRangeLife;
-  simulation = ds.s.sequentialXor(
-    cases = $cases;
-    resetAgent = true;
-    shuffle = true
-  )
-)
-
-$problemFFF = ea.p.functionToTo(
-  qFunction = f.namedMerged(
-    mappers = [
-      f.allNamed(
-        of = $learningSim;
-        fs = m.sKeyMap(
-          keys = [behavior; avgLastBoolScore; increase; consistency];
-          values = [
-            f.identity();
-            ds.e.sxor.avgScore(
-              rewardType = boolean;
-              caseIndexes = [360:1:399]   % last 40 cases
-            );
-            ds.e.sxor.avgScoreDelta(
-              rewardType = unlimited;
-              firstIndexes = [-10:1:-1];  % the last 40 cases
-              secondIndexes = [0:1:1]     % the first 4 cases
-            );
-            ds.e.sxor.avgScoreVariation(
-              rewardType = unlimited;
-              indexes = [-8:1:-1]         % last 8 cases
-            )
-          ]
-        )
-      );
-      f.allNamed(
-        of = $testSim;
-        fs = m.sKeyMap(
-          keys = [frozenScore];
-          values = [
-            ds.e.sxor.avgScore(
-              rewardType = boolean;
-              caseIndexes = [0:1:3]
-            )
-          ]
-        )
-      )
-    ]
-  );
-  cFunction = f.mapValue(key = frozenScore);
-  type = maximize;
-  example = ds.misc.simExample(
-    simulation = ds.s.sequentialXor()
-  )
-)
-
 $problem = ea.p.simToTo(
-  name = "shuffled-cases";
+  name = "avgLastBoolScore-fitness";
   simulation = ds.s.sequentialXor(
     cases = $cases;
     rewardType = unlimited;

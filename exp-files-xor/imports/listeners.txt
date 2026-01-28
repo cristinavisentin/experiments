@@ -1,10 +1,12 @@
-$basePath = ''./results/xor/shuffled/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/biasFixedAvgLastBoolScoreFitness/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-    f.mapValue(key = avgLastBoolScore; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+    f.mapValue(key = $fitnessType; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+    %f.filter(of = f.distinct(of = ea.f.treeLeaves(of = ea.f.genotype(of = ea.f.best()))); condition = predicate.matches(f = f.toString(); regex = "[a-z].*"));
+    %ea.f.genotype(of = ea.f.best(); format = "%20.20s")
   ];
   kFunctions = [
     f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
@@ -16,7 +18,7 @@ $consoleCSV = ea.l.csv(
   path = $basePath + "console.csv";
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-    f.mapValue(key = avgLastBoolScore; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+    f.mapValue(key = $fitnessType; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
     f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
     f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
   ];
@@ -30,14 +32,6 @@ $avgLastBoolScore = ea.l.savePlotForExp(
   path = $basePath + "avgLastBoolScore." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = avgLastBoolScore)
-  );
-  type = $imgType
-)
-
-$avgLastUnlimitedScore = ea.l.savePlotForExp(
-  path = $basePath + "avgLastUnlimitedScore." + $imgType;
-  plot = ea.plot.multi.quality(
-    q = f.mapValue(key = avgLastUnlimitedScore)
   );
   type = $imgType
 )
@@ -66,32 +60,12 @@ $frozen = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$frozenBehavior = ea.l.saveForRun(
-  path = $basePath + "/frozen" + "/{problem.name}/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
-  of = ea.acc.lastBest();
-  processor = viz.f.toImage(
-    drawer = ds.d.sequentialXor();
-    of = ds.f.simulate(
-      of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution())));
-      dT = 1;
-      tRange = $tRangeForFreeze;
-      simulation = ds.s.sequentialXor(
-        cases = $cases;
-        resetAgent = true;
-        shuffle = true
-      )
-    );
-    h = 180;
-    type = $imgType
-  )
-)
-
 $frozenScore = ea.l.savePlotForExp(
   path = $basePath + "frozenScore." + $imgType;
   plot = ea.plot.multi.xyExp(
     y = ds.e.sxor.avgScore(
       rewardType = unlimited;
-      caseIndexes = [0:1:7];
+      caseIndexes = [0:1:3];
       of = ds.f.simulate(
         of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best()))));
         dT = 1;
@@ -152,7 +126,7 @@ $stateTraj = ea.l.saveForRun(
 $archivesP = ea.l.savePlotForRun(
   path = $basePath + "{solver.name}-{randomGenerator.seed:%02d}/{problem.name}/me-archives." + $imgType;
   plot = ea.plot.single.me(values = [
-    f.mapValue(key = frozenScore; of = ea.f.quality());
+    %f.mapValue(key = frozenScore; of = ea.f.quality());
     f.mapValue(key = avgLastBoolScore; of = ea.f.quality())
   ]);
   kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = "me.*");
