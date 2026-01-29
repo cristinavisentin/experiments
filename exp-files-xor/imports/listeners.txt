@@ -132,3 +132,17 @@ $archivesP = ea.l.savePlotForRun(
   kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = "me.*");
   type = $imgType
 )
+
+$srTree = ea.l.saveForRun(
+  path = $basePath + "/trees" + "/{solver.name}/best-{randomGenerator.seed:%02d}." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toImage(
+    drawer = viz.d.stacked(drawers = [
+      ea.d.tree(scale = 3);
+      ea.d.formula(scale = 3);
+      ea.d.formula(scale = 3; simplify = true)
+    ]);
+    of = ea.f.srTreeShortVarName(of = ea.f.genotype());
+    type = svg
+  )
+)

@@ -6,7 +6,7 @@
 @import("imports/listeners.txt")
 
 $weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.0; max = 0.0)
+$initialWeightRange = m.range(min = -0.01; max = 0.01)
 
 $dIncrease = ea.s.me.d.descriptor(f = f.mapValue(key = increase; of = ea.f.quality()); min = 0.0; max = 1.0; nOfBins = 10)
 $dConsistency = ea.s.me.d.descriptor(f = f.mapValue(key = consistency; of = ea.f.quality()); min = 0.0; max = 0.2; nOfBins = 10)
@@ -75,6 +75,7 @@ ea.experiment(
     $frozenScore;
     $longerLife;
     $stateTraj;
-    $archivesP
+    $archivesP;
+    $srTree
   ]
 )
