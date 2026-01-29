@@ -1,11 +1,11 @@
-$basePath = ''./results/xor/biasFixedAvgLastBoolScoreFitness/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/avgLastBoolScoreFitness/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
     f.mapValue(key = $fitnessType; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
-    %f.filter(of = f.distinct(of = ea.f.treeLeaves(of = ea.f.genotype(of = ea.f.best()))); condition = predicate.matches(f = f.toString(); regex = "[a-z].*"));
+    %f.filter(of = f.distinct(of = ea.f.treeLeaves(of = ea.f.genotype(of = ea.f.best()))); condition = predicate.matches(f = f.toString(); regex = "[a-z].*"))
     %ea.f.genotype(of = ea.f.best(); format = "%20.20s")
   ];
   kFunctions = [
@@ -71,7 +71,7 @@ $frozenScore = ea.l.savePlotForExp(
         dT = 1;
         tRange = $tRangeForFreeze;
         simulation = ds.s.sequentialXor(
-          cases = $cases;
+          cases = $testCases;
           resetAgent = true;
           shuffle = true
         )
@@ -104,7 +104,7 @@ $longerLife = ea.l.savePlotForExp(
 )
 
 $stateTraj = ea.l.saveForRun(
-  path = $basePath + "/state" + "/{solver.name}/{randomGenerator.seed:%02d}." + $imgType;
+  path = $basePath + "/state" + "/{solver.name}/state-{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
     drawer = ds.d.vectorialTrajectory();
@@ -124,7 +124,7 @@ $stateTraj = ea.l.saveForRun(
 )
 
 $archivesP = ea.l.savePlotForRun(
-  path = $basePath + "{solver.name}-{randomGenerator.seed:%02d}/{problem.name}/me-archives." + $imgType;
+  path = $basePath + "/me" + "/{solver.name}/me-archives-{randomGenerator.seed:%02d}." + $imgType;
   plot = ea.plot.single.me(values = [
     %f.mapValue(key = frozenScore; of = ea.f.quality());
     f.mapValue(key = avgLastBoolScore; of = ea.f.quality())

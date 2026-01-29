@@ -30,8 +30,7 @@ $freeFormMapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametr
     innerLayers = $innerLayers; 
     weightInitializationType = random; 
     weightsUpdateInterval = $weightsUpdateInterval; 
-    initialWeightRange = $initialWeightRange;
-    historyLength = 1
+    initialWeightRange = $initialWeightRange
 ))
 
 ea.experiment(
@@ -57,7 +56,8 @@ ea.experiment(
       representation = ea.r.srTree(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
-        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation"
+        %operators = [addition; subtraction; multiplication];
+        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation|layeIdx|preSynapticNeuronIdx|postSynapticNeuronIdx"
       );
       mapper = $freeFormMapper;
       descriptors = [$dIncrease; $dConsistency];
