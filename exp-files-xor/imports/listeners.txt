@@ -142,7 +142,7 @@ $srTree = ea.l.saveForRun(
       ea.d.formula(scale = 3; simplify = true)
     ]);
     of = ea.f.srTreeShortVarName(of = ea.f.genotype());
-    type = svg
+    type = $imgType
   );
   kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = ".*freeForm.*")
 )
@@ -153,6 +153,6 @@ $bestBehavior = ea.l.saveForRun(
   processor = viz.f.toImage(
     drawer = ds.d.sequentialBf(scoreTypes = [boolean; limited]);
     of = f.mapValue(key = behavior; of = ea.f.quality());
-    type = svg
+    type = $imgType
   )
 )
