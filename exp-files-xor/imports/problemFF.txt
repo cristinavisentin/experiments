@@ -32,17 +32,17 @@ $problemFF = ea.p.functionToTo(
           keys = [behavior; avgLastBoolScore; increase; consistency];
           values = [
             f.identity();
-            ds.e.sxor.avgScore(
-              rewardType = unlimited;
+            ds.e.sBool.avgScore(
+              scoreType = unlimited;
               caseIndexes = [360:1:399]   % last 40 cases
             );
-            ds.e.sxor.avgScoreDelta(
-              rewardType = unlimited;
+            ds.e.sBool.avgScoreDelta(
+              scoreType = unlimited;
               firstIndexes = [-10:1:-1];  % the last 40 cases
               secondIndexes = [0:1:1]     % the first 4 cases
             );
-            ds.e.sxor.avgScoreVariation(
-              rewardType = unlimited;
+            ds.e.sBool.avgScoreVariation(
+              scoreType = unlimited;
               indexes = [-8:1:-1]         % last 8 cases
             )
           ]
@@ -51,10 +51,10 @@ $problemFF = ea.p.functionToTo(
       f.allNamed(
         of = $testSim;
         fs = m.sKeyMap(
-          keys = [frozenScore];
+          keys = [$fitnessType];
           values = [
-            ds.e.sxor.avgScore(
-              rewardType = unlimited;
+            ds.e.sBool.avgScore(
+              scoreType = unlimited;
               caseIndexes = [0:1:3]
             )
           ]
@@ -62,7 +62,7 @@ $problemFF = ea.p.functionToTo(
       )
     ]
   );
-  cFunction = f.mapValue(key = frozenScore);
+  cFunction = f.mapValue(key = $fitnessType);
   type = maximize;
   example = ds.misc.simExample(
     simulation = ds.s.sequentialXor()

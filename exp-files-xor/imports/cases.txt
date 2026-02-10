@@ -1,18 +1,6 @@
 $cases = 100 * ["00"] + 100 * ["01"] + 100 * ["10"] + 100 * ["11"]
 $testCases = ["00"; "01"; "10"; "11"]
+
 $tRangeLife = m.range(min = 0; max = 400)
 $tRangeDoubleLife = m.range(min = 0; max = 800)
 $tRangeForFreeze = m.range(min = 0; max = 4)
-
-
-$homoSameCases = 25 * ["00"] + 25 * ["01"] + 25 * ["10"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"]
-$homoDiffCases = 25 * ["10"] + 25 * ["00"] + 25 * ["01"] + 25 * ["11"] + 10 * ["00"; "01"; "10"; "11"]
-$heteroCases = 35 * ["00"; "01"; "10"; "11"]
-
-$endOfLifeCases = 10 * ["00"; "01"; "10"; "11"]
-$diffEOLCases = 10 * ["10"; "00"; "01"; "11"]
-
-$longerLifeLength = m.range(min = 0; max = 190)
-$entireLifeLength = m.range(min = 0; max = 140)
-
-$endOfLifeLength = m.range(min = 0; max = 40)

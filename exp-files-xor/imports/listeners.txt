@@ -1,4 +1,4 @@
-$basePath = ''./results/xor/avgLastBoolScoreFitness/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/seq-xor/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -52,8 +52,8 @@ $consistency = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$frozen = ea.l.savePlotForExp(
-  path = $basePath + "frozen." + $imgType;
+$frozenFitness = ea.l.savePlotForExp(
+  path = $basePath + "frozenFitness." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = frozenScore)
   );
@@ -63,8 +63,8 @@ $frozen = ea.l.savePlotForExp(
 $frozenScore = ea.l.savePlotForExp(
   path = $basePath + "frozenScore." + $imgType;
   plot = ea.plot.multi.xyExp(
-    y = ds.e.sxor.avgScore(
-      rewardType = unlimited;
+    y = ds.e.sBool.avgScore(
+      scoreType = unlimited;
       caseIndexes = [0:1:3];
       of = ds.f.simulate(
         of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best()))));
@@ -82,10 +82,10 @@ $frozenScore = ea.l.savePlotForExp(
 )
 
 $longerLife = ea.l.savePlotForExp(
-  path = $basePath + "avgOnAnotherLife." + $imgType;
+  path = $basePath + "longerLife." + $imgType;
   plot = ea.plot.multi.xyExp(
-    y = ds.e.sxor.avgScore(
-      rewardType = unlimited;
+    y = ds.e.sBool.avgScore(
+      scoreType = unlimited;
       caseIndexes = [-40:1:-1];     % last 40 cases
       of = ds.f.simulate(
         of = ea.f.solution(of = ea.f.best());
@@ -104,7 +104,7 @@ $longerLife = ea.l.savePlotForExp(
 )
 
 $stateTraj = ea.l.saveForRun(
-  path = $basePath + "/state" + "/{solver.name}/state-{randomGenerator.seed:%02d}." + $imgType;
+  path = $basePath + "/state" + "/{solver.name}/{problem.name}/weights{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
     drawer = ds.d.vectorialTrajectory();
@@ -124,7 +124,7 @@ $stateTraj = ea.l.saveForRun(
 )
 
 $archivesP = ea.l.savePlotForRun(
-  path = $basePath + "/me" + "/{solver.name}/me-archives-{randomGenerator.seed:%02d}." + $imgType;
+  path = $basePath + "/me" + "/{solver.name}/{problem.name}/archives{randomGenerator.seed:%02d}." + $imgType;
   plot = ea.plot.single.me(values = [
     %f.mapValue(key = frozenScore; of = ea.f.quality());
     f.mapValue(key = avgLastBoolScore; of = ea.f.quality())
@@ -134,7 +134,7 @@ $archivesP = ea.l.savePlotForRun(
 )
 
 $srTree = ea.l.saveForRun(
-  path = $basePath + "/trees" + "/{solver.name}/best-{randomGenerator.seed:%02d}." + $imgType;
+  path = $basePath + "/trees" + "/{solver.name}/{problem.name}/bestTree{randomGenerator.seed:%02d}." + $imgType;
   of = ea.acc.lastBest();
   processor = viz.f.toImage(
     drawer = viz.d.stacked(drawers = [
@@ -143,6 +143,16 @@ $srTree = ea.l.saveForRun(
       ea.d.formula(scale = 3; simplify = true)
     ]);
     of = ea.f.srTreeShortVarName(of = ea.f.genotype());
+    type = svg
+  )
+)
+
+$bestBehavior = ea.l.saveForRun(
+  path = $basePath + "/behavior" + "/{solver.name}/{problem.name}/best-behavior{randomGenerator.seed:%02d}." + $imgType;
+  of = ea.acc.lastBest();
+  processor = viz.f.toImage(
+    drawer = ds.d.sequentialBf(scoreTypes = [boolean; limited]);
+    of = f.mapValue(key = behavior; of = ea.f.quality());
     type = svg
   )
 )
