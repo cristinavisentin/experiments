@@ -20,8 +20,8 @@ $qFunctions = f.allNamed(fs = m.sKeyMap(
   ]
 ))
 
-$seqXorPproblem = ea.p.simToTo(
-  name = "seqXorProblem";
+$xorProblem = ea.p.simToTo(
+  name = "xor";
   simulation = ds.s.sequentialXor(
     cases = $cases;
     rewardType = unlimited;
@@ -30,7 +30,7 @@ $seqXorPproblem = ea.p.simToTo(
   );
   dT = 1;
   tRange = $tRangeLife;
-  comparator = ea.comparator.descending(of = f.mapValue(key = $fitnessType));
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
 
@@ -48,6 +48,6 @@ $biXorProblem = ea.p.simToTo(
   );
   dT = 1;
   tRange = $tRangeLife;
-  comparator = ea.comparator.descending(of = f.mapValue(key = $fitnessType));
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
