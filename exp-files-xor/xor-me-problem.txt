@@ -17,15 +17,15 @@ ea.experiment(
       name = "me-hebbian-synapse";
       representation = ea.representation.doubleString();
       mapper = $hebbianSynapseMapper;
-      descriptors = [$dIncrease; $dConsistency];
-      remap = true
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     );
     ea.s.mapElites(
       name = "me-hebbian-network";
       representation = ea.representation.doubleString();
       mapper = $hebbianNetworkMapper;
-      descriptors = [$dIncrease; $dConsistency];
-      remap = true
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     );
     ea.s.mapElites(
       name = "me-freeForm";
@@ -36,8 +36,8 @@ ea.experiment(
         %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation|layeIdx|preSynapticNeuronIdx|postSynapticNeuronIdx"
       );
       mapper = $freeFormMapper;
-      descriptors = [$dIncrease; $dConsistency];
-      remap = true
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     )
   ])
   * [ea.run()];
