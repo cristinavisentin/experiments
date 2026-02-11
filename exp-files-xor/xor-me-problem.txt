@@ -2,35 +2,51 @@
 
 @import("imports/cases.txt")
 @import("imports/problem.txt")
-%@import("imports/problemFF.txt")
 @import("imports/listeners.txt")
 @import("imports/mappers.txt")
 
-$dIncrease = ea.s.me.d.descriptor(f = f.mapValue(key = increase; of = ea.f.quality()); min = 0.0; max = 1.0; nOfBins = 10)
-$dConsistency = ea.s.me.d.descriptor(f = f.mapValue(key = consistency; of = ea.f.quality()); min = 0.0; max = 0.2; nOfBins = 10)
+$dIncrease = ea.s.me.d.descriptor(
+  f = f.mapValue(key = increase; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 1.0; 
+  nOfBins = 10
+)
+$dConsistency = ea.s.me.d.descriptor(
+  f = f.mapValue(key = consistency; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 0.2; 
+  nOfBins = 10
+)
 
-$problem = [$xorProblem; $biXorProblem]
+$problem = [$xorProblem]
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
-      name = "me-hebbian-synapse";
+      name = "mlp";
       representation = ea.representation.doubleString();
-      mapper = $hebbianSynapseMapper;
+      mapper = $mlpMapper;
       descriptors = [$dIncrease; $dConsistency]
       %remap = true
     );
     ea.s.mapElites(
-      name = "me-hebbian-network";
+      name = "hebbian-network";
       representation = ea.representation.doubleString();
       mapper = $hebbianNetworkMapper;
       descriptors = [$dIncrease; $dConsistency]
       %remap = true
     );
     ea.s.mapElites(
-      name = "me-freeForm";
+      name = "hebbian-synapse";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianSynapseMapper;
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
+    );
+    ea.s.mapElites(
+      name = "freeForm";
       representation = ea.r.srTree(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]

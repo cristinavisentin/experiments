@@ -1,4 +1,4 @@
-$basePath = ''./results/seq-bool/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor[2]/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -28,7 +28,7 @@ $consoleCSV = ea.l.csv(
   onlyLast = true
 )
 
-$avgLastBoolScore = ea.l.savePlotForExp(
+$avgLastBoolScore = ea.l.savePlotAndCsvForExp(
   path = $basePath + "avgLastBoolScore." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = avgLastBoolScore)
@@ -36,7 +36,7 @@ $avgLastBoolScore = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$increase = ea.l.savePlotForExp(
+$increase = ea.l.savePlotAndCsvForExp(
   path = $basePath + "increase." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = increase)
@@ -44,7 +44,7 @@ $increase = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$consistency = ea.l.savePlotForExp(
+$consistency = ea.l.savePlotAndCsvForExp(
   path = $basePath + "consistency." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = consistency)
@@ -60,7 +60,7 @@ $frozenFitness = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$frozenScore = ea.l.savePlotForExp(
+$frozenScore = ea.l.savePlotAndCsvForExp(
   path = $basePath + "frozenScore." + $imgType;
   plot = ea.plot.multi.xyExp(
     y = ds.e.sBool.avgScore(
@@ -81,7 +81,7 @@ $frozenScore = ea.l.savePlotForExp(
   type = $imgType
 )
 
-$longerLife = ea.l.savePlotForExp(
+$longerLife = ea.l.savePlotAndCsvForExp(
   path = $basePath + "longerLife." + $imgType;
   plot = ea.plot.multi.xyExp(
     y = ds.e.sBool.avgScore(
@@ -123,7 +123,7 @@ $stateTraj = ea.l.saveForRun(
   )
 )
 
-$archivesP = ea.l.savePlotForRun(
+$archivesP = ea.l.savePlotAndCsvForRun(
   path = $basePath + "/{solver.name}/{problem.name}/me-archives-{randomGenerator.seed:%02d}." + $imgType;
   plot = ea.plot.single.me(values = [
     f.mapValue(key = avgLastBoolScore; of = ea.f.quality())
