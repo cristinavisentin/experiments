@@ -4,34 +4,10 @@
 @import("imports/problem.txt")
 %@import("imports/problemFF.txt")
 @import("imports/listeners.txt")
-
-$weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.5; max = 0.5)
+@import("imports/mappers.txt")
 
 $dIncrease = ea.s.me.d.descriptor(f = f.mapValue(key = increase; of = ea.f.quality()); min = 0.0; max = 1.0; nOfBins = 10)
 $dConsistency = ea.s.me.d.descriptor(f = f.mapValue(key = consistency; of = ea.f.quality()); min = 0.0; max = 0.2; nOfBins = 10)
-
-$mlpMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.mlp(innerLayers = $innerLayers)))
-$hebbianSynapseMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
-    innerLayers = $innerLayers; 
-    parametrizationType = synapse; 
-    weightInitializationType = random; 
-    weightsUpdateInterval = $weightsUpdateInterval; 
-    initialWeightRange = $initialWeightRange
-)))
-$hebbianNetworkMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
-    innerLayers = $innerLayers; 
-    parametrizationType = network; 
-    weightInitializationType = random; 
-    weightsUpdateInterval = $weightsUpdateInterval; 
-    initialWeightRange = $initialWeightRange
-)))
-$freeFormMapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(
-    innerLayers = $innerLayers; 
-    weightInitializationType = random; 
-    weightsUpdateInterval = $weightsUpdateInterval; 
-    initialWeightRange = $initialWeightRange
-))
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
