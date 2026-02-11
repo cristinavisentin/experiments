@@ -9,9 +9,11 @@
 $dIncrease = ea.s.me.d.descriptor(f = f.mapValue(key = increase; of = ea.f.quality()); min = 0.0; max = 1.0; nOfBins = 10)
 $dConsistency = ea.s.me.d.descriptor(f = f.mapValue(key = consistency; of = ea.f.quality()); min = 0.0; max = 0.2; nOfBins = 10)
 
+$problem = [$xorProblem; $biXorProblem]
+
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
-  * (problem = [$xorProblem; $biXorProblem])
+  * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
       name = "me-hebbian-synapse";
