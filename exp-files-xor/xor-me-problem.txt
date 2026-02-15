@@ -25,13 +25,6 @@ ea.experiment(
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
-      name = "mlp";
-      representation = ea.representation.doubleString();
-      mapper = $mlpMapper;
-      descriptors = [$dIncrease; $dConsistency]
-      %remap = true
-    );
-    ea.s.mapElites(
       name = "hebbian-network";
       representation = ea.representation.doubleString();
       mapper = $hebbianNetworkMapper;
