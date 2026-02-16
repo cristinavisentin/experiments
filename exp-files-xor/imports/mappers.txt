@@ -1,5 +1,5 @@
 $weightsUpdateInterval = 1
-$initialWeightRange = m.range(min = -0.5; max = 0.5)
+$initialWeightRange = m.range(min = -0.0; max = 0.0)
 
 $mlpMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.mlp(innerLayers = $innerLayers)))
 $hebbianSynapseMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
