@@ -1,4 +1,4 @@
-$basePath = ''./results/xor-final/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -48,14 +48,6 @@ $consistency = ea.l.savePlotAndCsvForExp(
   path = $basePath + "consistency." + $imgType;
   plot = ea.plot.multi.quality(
     q = f.mapValue(key = consistency)
-  );
-  type = $imgType
-)
-
-$frozenFitness = ea.l.savePlotForExp(
-  path = $basePath + "frozenFitness." + $imgType;
-  plot = ea.plot.multi.quality(
-    q = f.mapValue(key = frozenScore)
   );
   type = $imgType
 )

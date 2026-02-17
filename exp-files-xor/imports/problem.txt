@@ -34,20 +34,18 @@ $xorProblem = ea.p.simToTo(
   qFunction = $qFunctions
 )
 
-$biXorProblem = ea.p.simToTo(
-  name = "bi-xor";
+$parityProblem = ea.p.simToTo(
+  name = "even-parity";
   simulation = ds.s.sequentialBf(
-    cases = $cases;
-    target = ea.misc.bf(exprs = [
-      "and(or(0;1);not(and(0;1)))";
-      "not(and(or(0;1);not(and(0;1))))"
-    ]);
+    cases = $casesParity;
+    target = ea.misc.evenParityBf(n = 5);
+    %target = ea.misc.mopmBf(n = 3);
     rewardType = unlimited;
     resetAgent = true;
     shuffle = true
   );
   dT = 1;
-  tRange = $tRangeLife;
+  tRange = $tRangeParity;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )

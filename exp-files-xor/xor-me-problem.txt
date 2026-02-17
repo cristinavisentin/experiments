@@ -19,32 +19,34 @@ $dConsistency = ea.s.me.d.descriptor(
 )
 
 $problem = [$xorProblem]
+%$problem = $parityProblem
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
-      name = "hebbian-network";
+      name = "me-hebbian-network";
       representation = ea.representation.doubleString();
       mapper = $hebbianNetworkMapper;
       descriptors = [$dIncrease; $dConsistency]
       %remap = true
     );
     ea.s.mapElites(
-      name = "hebbian-synapse";
+      name = "me-hebbian-synapse";
       representation = ea.representation.doubleString();
       mapper = $hebbianSynapseMapper;
       descriptors = [$dIncrease; $dConsistency]
       %remap = true
     );
     ea.s.mapElites(
-      name = "freeForm";
+      name = "me-freeForm";
       representation = ea.r.srTree(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
         %operators = [addition; subtraction; multiplication];
-        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation|layeIdx|preSynapticNeuronIdx|postSynapticNeuronIdx"
+        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation"
+        %excludeVarNameRegex = "reward"
       );
       mapper = $freeFormMapper;
       descriptors = [$dIncrease; $dConsistency]
@@ -58,7 +60,6 @@ ea.experiment(
     $avgLastBoolScore;
     $increase;
     $consistency;
-    %$frozenFitness;
     $frozenScore;
     $longerLife;
     $stateTraj;
