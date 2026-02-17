@@ -1,0 +1,70 @@
+$fitnessType = frozenScore
+
+$testSim = ds.f.simulate(
+  of = ds.f.asNumericalRLAgent(of = ds.f.stateless(of = ds.f.nonLearning()));
+  dT = 1;
+  tRange = $tRangeForFreeze;
+  simulation = ds.s.sequentialXor(
+    cases = $testCases;
+    resetAgent = true;
+    shuffle = true
+  )
+)
+
+$learningSim = ds.f.simulate(
+  name = "test-sim";
+  dT = 1;
+  tRange = $tRangeLife;
+  simulation = ds.s.sequentialXor(
+    cases = $cases;
+    resetAgent = true;
+    shuffle = true
+  )
+)
+
+$problemFF = ea.p.functionToTo(
+  name = "frozenScore-fitness";
+  qFunction = f.namedMerged(
+    mappers = [
+      f.allNamed(
+        of = $learningSim;
+        fs = m.sKeyMap(
+          keys = [behavior; avgLastBoolScore; increase; consistency];
+          values = [
+            f.identity();
+            ds.e.sBool.avgScore(
+              scoreType = unlimited;
+              caseIndexes = [360:1:399]   % last 40 cases
+            );
+            ds.e.sBool.avgScoreDelta(
+              scoreType = unlimited;
+              firstIndexes = [-10:1:-1];  % the last 40 cases
+              secondIndexes = [0:1:1]     % the first 4 cases
+            );
+            ds.e.sBool.avgScoreVariation(
+              scoreType = unlimited;
+              indexes = [-8:1:-1]         % last 8 cases
+            )
+          ]
+        )
+      );
+      f.allNamed(
+        of = $testSim;
+        fs = m.sKeyMap(
+          keys = [$fitnessType];
+          values = [
+            ds.e.sBool.avgScore(
+              scoreType = unlimited;
+              caseIndexes = [0:1:3]
+            )
+          ]
+        )
+      )
+    ]
+  );
+  cFunction = f.mapValue(key = $fitnessType);
+  type = maximize;
+  example = ds.misc.simExample(
+    simulation = ds.s.sequentialXor()
+  )
+)
