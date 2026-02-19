@@ -1,0 +1,196 @@
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals, $innerLayers
+
+$dT = 0.1
+$tRange = m.range(min = 0; max = 60)
+$basePath = ''./results/navigation/local/{^^.name}/{^^.startTime}/''
+$imgType = svg
+
+$empty = ds.arena.prepared(
+  name = empty;
+  initialRobotXRange = m.range(min = 0.78; max = 0.78);
+  initialRobotYRange = m.range(min = 0.4; max = 0.4);
+  targetXRange = m.range(min = 0.22; max = 0.22);
+  targetYRange = m.range(min = 0.8; max = 0.8)
+)
+$a_barrier = ds.arena.prepared(
+  name = a_barrier;
+  initialRobotXRange = m.range(min = 0.5; max = 0.5);
+  initialRobotYRange = m.range(min = 0.78; max = 0.78);
+  targetXRange = m.range(min = 0.5; max = 0.5);
+  targetYRange = m.range(min = 0.16; max = 0.16)
+)
+
+$trainArenas = 24 * [$empty]
+$testArenas = [$empty; $a_barrier]
+
+$trainEnviroment = (arena = $trainArenas)
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$testEnviroment = (arena = $testArenas)
+* [ds.e.navigation(randomGenerator = m.sharedRG())]
+
+$qFunctions = f.allNamed(
+  fs = m.sKeyMap(
+    keys = [fitness; increase; consistency];
+    values = [
+      f.avg(of = f.subList(from = 20; to = 24; relative = false));
+      ea.f.numExpr(
+        expr = "-(x2;x1)";
+        args = [
+          f.avg(of = f.subList(from = 0; to = 4; relative = false));
+          f.avg(of = f.subList(from = 20; to = 24; relative = false))
+        ]
+      );
+      f.sd(of = f.subList(from = 20; to = 24; relative = false))
+    ]
+  );
+  of = f.each(mapF = ds.f.cumulatedReward())
+)
+
+$simToTo = ea.p.simToTo(
+  dT = $dT;
+  tRange = $tRange;
+  qFunction = f.identity();
+  comparator = ea.comparator.descending(of = ds.f.cumulatedReward())
+)
+
+$problem = ea.p.manyToCbto(
+  name = "train";
+  problems = (simulation = (environment = $trainEnviroment)
+  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching(targetProximityReward = 0))])
+  * [$simToTo];
+  aggregator = $qFunctions;
+  comparator = ea.comparator.descending(of = f.mapValue(key = fitness))
+)
+
+$weightsUpdateInterval = 1
+$initialWeightRange = m.range(min = -0.1; max = 0.1)
+
+$hebbianSynapseMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
+  innerLayers = $innerLayers; 
+  parametrizationType = synapse; 
+  weightInitializationType = random; 
+  weightsUpdateInterval = $weightsUpdateInterval; 
+  initialWeightRange = $initialWeightRange;
+  maxWeightMagnitude = 100
+)))
+$hebbianNetworkMapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(
+  innerLayers = $innerLayers; 
+  parametrizationType = network; 
+  weightInitializationType = random; 
+  weightsUpdateInterval = $weightsUpdateInterval; 
+  initialWeightRange = $initialWeightRange;
+  maxWeightMagnitude = 100
+)))
+$freeFormMapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(
+  innerLayers = $innerLayers; 
+  weightInitializationType = random; 
+  weightsUpdateInterval = $weightsUpdateInterval; 
+  initialWeightRange = $initialWeightRange;
+  maxWeightMagnitude = 100
+))
+
+$dIncrease = ea.s.me.d.descriptor(
+  f = f.mapValue(key = increase; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 1.0; 
+  nOfBins = 10
+)
+$dConsistency = ea.s.me.d.descriptor(
+  f = f.mapValue(key = consistency; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 0.2; 
+  nOfBins = 10
+)
+
+ea.experiment(
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
+  * (problem = $problem)
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
+    ea.s.mapElites(
+      name = "me-hebbian-network";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianNetworkMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    );
+    ea.s.mapElites(
+      name = "me-hebbian-synapse";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianSynapseMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    );
+    ea.s.mapElites(
+      name = "me-freeForm";
+      representation = ea.r.srTree(
+        ephemeral = true;
+        operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
+      );
+      mapper = $freeFormMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    )
+  ])
+  * [ea.run()];
+  listeners = [
+    ea.l.console(
+      eFunctions = [
+        ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+        f.mapValue(key = fitness; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+        f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+        f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+      ];
+      onlyLast = true
+    );
+    ea.l.csv(
+      path = $basePath + "console.csv";
+      eFunctions = [
+        ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
+        f.mapValue(key = fitness; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+        f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+        f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+      ]
+    );
+    ea.l.savePlotAndCsvForExp(
+      path = $basePath + "fitness." + $imgType;
+      plot = ea.plot.multi.quality(
+        q = f.mapValue(key = fitness)
+      );
+      type = $imgType
+    );
+    ea.l.savePlotAndCsvForExp(
+      path = $basePath + "increase." + $imgType;
+      plot = ea.plot.multi.quality(
+        q = f.mapValue(key = increase)
+      );
+      type = $imgType
+    );
+    ea.l.savePlotAndCsvForExp(
+      path = $basePath + "consistency." + $imgType;
+      plot = ea.plot.multi.quality(
+        q = f.mapValue(key = consistency)
+      );
+      type = $imgType
+    );
+    ea.l.savePlotAndCsvForRun(
+      path = $basePath + "/{solver.name}/me-archives-{randomGenerator.seed:%02d}." + $imgType;
+      plot = ea.plot.single.me(values = [
+        f.mapValue(key = fitness; of = ea.f.quality())
+      ]);
+      kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = "me.*");
+      type = $imgType
+    );
+    ea.l.saveForRun(
+      path = $basePath + "{solver.name}/best-frozen-learning-trajs-{randomGenerator.seed:%02d}." + $imgType;
+      of = ea.acc.lastBest();
+      processor = viz.f.toMultiImage(
+        drawer = ds.d.navigation();
+        of = f.all(
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution()));
+          fs = (simulation = (environment = $testEnviroment)
+          * [ds.sat.fromEnvironment()])
+          * [ds.f.simulate(dT = $dT; tRange = $tRange)]
+        );
+        type = $imgType
+      )
+    )
+  ]
+)
