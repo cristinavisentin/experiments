@@ -1,4 +1,4 @@
-$basePath = ''./results/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/xor/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $console = ea.l.console(
@@ -133,7 +133,7 @@ $srTree = ea.l.saveForRun(
       ea.d.formula(scale = 3);
       ea.d.formula(scale = 3; simplify = true)
     ]);
-    of = ea.f.srTreeShortVarName(of = ea.f.genotype());
+    of = ea.f.genotype();
     type = $imgType
   );
   kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = ".*freeForm.*")

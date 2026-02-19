@@ -1,0 +1,41 @@
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals, $innerLayers
+
+@import("imports/cases.txt")
+@import("imports/problem.txt")
+@import("imports/listeners.txt")
+@import("imports/mappers.txt")
+
+$dIncrease = ea.s.me.d.descriptor(
+  f = f.mapValue(key = increase; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 1.0; 
+  nOfBins = 10
+)
+$dConsistency = ea.s.me.d.descriptor(
+  f = f.mapValue(key = consistency; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 0.2; 
+  nOfBins = 10
+)
+
+$problem = [$parityProblem, $mopmProblem]
+
+ea.experiment(
+  runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
+  * (problem = $problem)
+  * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
+    ea.s.mapElites(
+      name = "me-mlp";
+      representation = ea.representation.doubleString();
+      mapper = $mlpMapper;
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
+    )
+  ])
+  * [ea.run()];
+  listeners = [
+    $console;
+    $consoleCSV;
+    $avgLastBoolScore
+  ]
+)

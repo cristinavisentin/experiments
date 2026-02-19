@@ -6,16 +6,16 @@ $qFunctions = f.allNamed(fs = m.sKeyMap(
     f.identity();
     ds.e.sBool.avgScore(
       scoreType = boolean;
-      caseIndexes = [360:1:399]   % last 40 cases
+      caseIndexes = [360:1:399]  
     );
     ds.e.sBool.avgScoreDelta(
       scoreType = unlimited;
-      firstIndexes = [-10:1:-1];  % the last 40 cases
-      secondIndexes = [0:1:1]     % the first 4 cases
+      firstIndexes = [-10:1:-1]; 
+      secondIndexes = [0:1:1]    
     );
     ds.e.sBool.avgScoreVariation(
       scoreType = unlimited;
-      indexes = [-8:1:-1]         % last 8 cases
+      indexes = [-8:1:-1]  
     )
   ]
 ))
@@ -34,18 +34,32 @@ $xorProblem = ea.p.simToTo(
   qFunction = $qFunctions
 )
 
+$caseIndexesParity = [928:1:959]
 $parityProblem = ea.p.simToTo(
-  name = "even-parity";
+  name = "parity";
   simulation = ds.s.sequentialBf(
     cases = $casesParity;
     target = ea.misc.evenParityBf(n = 5);
-    %target = ea.misc.mopmBf(n = 3);
     rewardType = unlimited;
-    resetAgent = true;
-    shuffle = true
+    resetAgent = true
   );
   dT = 1;
   tRange = $tRangeParity;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  qFunction = $qFunctions
+)
+
+$caseIndexesMopm = [1856:1:1919]
+$mopmProblem = ea.p.simToTo(
+  name = "mopm";
+  simulation = ds.s.sequentialBf(
+    cases = $casesMopm;
+    target = ea.misc.mopmBf(n = 3);
+    rewardType = unlimited;
+    resetAgent = true
+  );
+  dT = 1;
+  tRange = $tRangeMopm;
   comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
   qFunction = $qFunctions
 )
