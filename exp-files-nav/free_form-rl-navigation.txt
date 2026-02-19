@@ -1,53 +1,65 @@
-% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals
+% REQUIRED CMD-LINE PARAMS: $seeds, $nOfEvals, $innerLayers
 
 $dT = 0.1
 $tRange = m.range(min = 0; max = 60)
 
-@import("imports/functions.txt")
 @import("imports/arenas.txt")
 @import("imports/problem.txt")
+@import("imports/mappers.txt")
 @import("imports/listeners.txt")
 
-$innerLayers = [8; 8; 8]
-$weightsUpdateInterval = 5
-$initialWeightRange = m.range(min = -0.01; max = 0.01)
+$dIncrease = ea.s.me.d.descriptor(
+  f = f.mapValue(key = increase; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 1.0; 
+  nOfBins = 10
+)
+$dConsistency = ea.s.me.d.descriptor(
+  f = f.mapValue(key = consistency; of = ea.f.quality()); 
+  min = 0.0; 
+  max = 0.2; 
+  nOfBins = 10
+)
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
-    ea.s.ga(
-      name = "mlp";
+    ea.s.mapElites(
+      name = "me-hebbian-network";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.mlp(innerLayers = $innerLayers)));
-      remap = true
+      mapper = $hebbianNetworkMapper;
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     );
-    ea.s.ga(
-      name = "hebbian+synapse+random";
+    ea.s.mapElites(
+      name = "me-hebbian-synapse";
       representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = synapse; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)));
-      remap = true
+      mapper = $hebbianSynapseMapper;
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     );
-    ea.s.ga(
-      name = "hebbian+network+random";
-      representation = ea.representation.doubleString();
-      mapper = ea.mapper.ndsToNrla(of = ea.mapper.dsToParametrized(parametrized = ds.num.hebbianMlp(innerLayers = $innerLayers; parametrizationType = network; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange)));
-      remap = true
-    );
-    ea.s.ga(
-      name = "freeForm+random";
-      representation = ea.representation.srTree();
-      mapper = ea.mapper.parametrized(of = ea.mapper.srTreeToNurf(); parametrized = ds.rl.num.freeFormMlp(innerLayers = $innerLayers; weightInitializationType = random; weightsUpdateInterval = $weightsUpdateInterval; initialWeightRange = $initialWeightRange));
-      remap = true
+    ea.s.mapElites(
+      name = "me-freeForm";
+      representation = ea.r.srTree(
+        ephemeral = true;
+        operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
+        %operators = [addition; subtraction; multiplication];
+        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation|preSynapticNeuronIdx|postSynapticNeuronIdx|layerIdx"
+        %excludeVarNameRegex = "reward"
+      );
+      mapper = $freeFormMapper;
+      descriptors = [$dIncrease; $dConsistency]
+      %remap = true
     )
   ])
   * [ea.run()];
   listeners = [
-    $console; $consoleCSV;
-    $finalCRF; $finalCRFBoxplot;
-    $increaseCRF; $increaseCRFBoxplot;
-    $consistencyCRF; $consistencyCRFBoxplot;
-    $boxplotFinalDist;
-    $drawTrajectories
+    $console;
+    $consoleCSV;
+    $fitness;
+    $increase;
+    $consistency;
+    $archives
   ]
 )

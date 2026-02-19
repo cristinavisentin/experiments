@@ -1,78 +1,24 @@
 $empty = ds.arena.prepared(
   name = empty;
-  initialRobotXRange = m.range(min = 0.78; max = 0.8);
-  initialRobotYRange = m.range(min = 0.45; max = 0.5);
-  targetXRange = m.range(min = 0.2; max = 0.22);
-  targetYRange = m.range(min = 0.3; max = 0.6)
+  initialRobotXRange = m.range(min = 0.78; max = 0.78);
+  initialRobotYRange = m.range(min = 0.4; max = 0.4);
+  targetXRange = m.range(min = 0.22; max = 0.22);
+  targetYRange = m.range(min = 0.8; max = 0.8)
 )
 $a_barrier = ds.arena.prepared(
   name = a_barrier;
-  initialRobotXRange = m.range(min = 0.45; max = 0.5);
-  initialRobotYRange = m.range(min = 0.78; max = 0.8)
+  initialRobotXRange = m.range(min = 0.5; max = 0.5);
+  initialRobotYRange = m.range(min = 0.78; max = 0.78);
+  targetXRange = m.range(min = 0.5; max = 0.5);
+  targetYRange = m.range(min = 0.16; max = 0.16)
 )
 $u_barrier = ds.arena.prepared(
   name = u_barrier;
-  initialRobotXRange = m.range(min = 0.2; max = 0.8);
-  initialRobotYRange = m.range(min = 0.7; max = 0.9);
-  targetXRange = m.range(min = 0.3; max = 0.7);
-  targetYRange = m.range(min = 0.1; max = 0.2)
-)
-$deceptive_maze = ds.arena.prepared(
-  name = deceptive_maze;
-  initialRobotXRange = m.range(min = 0.9; max = 0.95);
-  initialRobotYRange = m.range(min = 0.9; max = 0.95);
-  targetXRange = m.range(min = 0.1; max = 0.12);
-  targetYRange = m.range(min = 0.1; max = 0.12)
+  initialRobotXRange = m.range(min = 0.5; max = 0.5);
+  initialRobotYRange = m.range(min = 0.78; max = 0.78);
+  targetXRange = m.range(min = 0.5; max = 0.5);
+  targetYRange = m.range(min = 0.16; max = 0.16)
 )
 
-$corridorNW2SE = ds.arena.fromString(
-  name = "deceptive-corridor";
-  s = "s            |" +
-      "             |" +
-      "             |" +
-      "wwww     wwww|" +
-      "   w w w w   |" +
-      "   w w w w   |" +
-      "   w w w w   |" +
-      "   w w w w   |" +
-      "   www w w   |" +
-      "   w   w w   |" +
-      "wwww   wwwwww|" +
-      "             |" +
-      "           t "
-)
-
-$trainArenas = [
-  $empty;
-  $empty;
-  $empty;
-  $empty;
-  $empty;
-  $a_barrier;
-  $a_barrier;
-  $a_barrier;
-  $a_barrier;
-  $a_barrier;
-  $u_barrier;
-  $u_barrier;
-  $u_barrier;
-  $u_barrier;
-  $u_barrier;
-  $deceptive_maze;
-  $deceptive_maze;
-  $deceptive_maze;
-  $deceptive_maze;
-  $deceptive_maze;
-  $empty;
-  $a_barrier;
-  $u_barrier;
-  $deceptive_maze
-]
-
-$testArenas = [
-  $empty;
-  $a_barrier;
-  $u_barrier;
-  $deceptive_maze;
-  $corridorNW2SE
-]
+$trainArenas = 24 * [$a_barrier]
+$testArenas = [$a_barrier; $empty; $u_barrier]
