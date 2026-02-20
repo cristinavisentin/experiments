@@ -46,7 +46,7 @@ ea.experiment(
         ephemeral = true;
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
         %operators = [addition; subtraction; multiplication];
-        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation|preSynapticNeuronIdx|postSynapticNeuronIdx|layerIdx"
+        %includeVarNameRegex = "current_neuronPost_activation|current_neuronPre_activation"
         %excludeVarNameRegex = "current_reward|average_reward|stdDev_reward|trend_reward"
       );
       mapper = $freeFormMapper;

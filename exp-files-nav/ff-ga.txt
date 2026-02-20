@@ -90,7 +90,17 @@ ea.experiment(
         f.mapValue(key = fitness; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
         f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
         f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
-      ]
+      ];
+      kFunctions = [
+        f.replaceAll(
+          of = f.interpolated(
+            name = numberOfInnerLayers; 
+            s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"
+          ); 
+          regex="null"
+        )
+      ];
+      onlyLast = true
     );
     ea.l.savePlotAndCsvForExp(
       path = $basePath + "fitness." + $imgType;

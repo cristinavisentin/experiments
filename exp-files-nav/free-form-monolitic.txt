@@ -2,26 +2,10 @@
 
 $dT = 0.1
 $tRange = m.range(min = 0; max = 60)
-$basePath = ''./results/navigation/local/{^^.name}/{^^.startTime}/''
+$basePath = ''./results/navigation/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
-$empty = ds.arena.prepared(
-  name = empty;
-  initialRobotXRange = m.range(min = 0.78; max = 0.78);
-  initialRobotYRange = m.range(min = 0.4; max = 0.4);
-  targetXRange = m.range(min = 0.22; max = 0.22);
-  targetYRange = m.range(min = 0.8; max = 0.8)
-)
-$a_barrier = ds.arena.prepared(
-  name = a_barrier;
-  initialRobotXRange = m.range(min = 0.5; max = 0.5);
-  initialRobotYRange = m.range(min = 0.78; max = 0.78);
-  targetXRange = m.range(min = 0.5; max = 0.5);
-  targetYRange = m.range(min = 0.16; max = 0.16)
-)
-
-$trainArenas = 24 * [$empty]
-$testArenas = [$empty; $a_barrier]
+@import("imports/arenas.txt")
 
 $trainEnviroment = (arena = $trainArenas)
 * [ds.e.navigation(randomGenerator = m.sharedRG())]
@@ -57,7 +41,7 @@ $simToTo = ea.p.simToTo(
 $problem = ea.p.manyToCbto(
   name = "train";
   problems = (simulation = (environment = $trainEnviroment)
-  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching(targetProximityReward = 0))])
+  * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
   * [$simToTo];
   aggregator = $qFunctions;
   comparator = ea.comparator.descending(of = f.mapValue(key = fitness))
