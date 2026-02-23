@@ -1,6 +1,0 @@
-n.evals.q.1.0.	train.8.8.8.mlp.best.quality.final	train.8.8.8.mlp.best.quality.final.min	train.8.8.8.mlp.best.quality.final.max	train.8.8.8.hebbian.synapse.random.best.quality.final	train.8.8.8.hebbian.synapse.random.best.quality.final.min	train.8.8.8.hebbian.synapse.random.best.quality.final.max	train.8.8.8.hebbian.network.random.best.quality.final	train.8.8.8.hebbian.network.random.best.quality.final.min	train.8.8.8.hebbian.network.random.best.quality.final.max	train.8.8.8.freeForm.random.best.quality.final	train.8.8.8.freeForm.random.best.quality.final.min	train.8.8.8.freeForm.random.best.quality.final.max
-1.000e+02	6.427e+01	6.427e+01	6.427e+01	9.052e+01	9.052e+01	9.052e+01	1.094e+02	1.094e+02	1.094e+02	3.343e+00	3.343e+00	3.343e+00
-2.000e+02	6.427e+01	6.427e+01	6.427e+01	9.052e+01	9.052e+01	9.052e+01	1.094e+02	1.094e+02	1.094e+02	1.003e+01	1.003e+01	1.003e+01
-3.000e+02	6.427e+01	6.427e+01	6.427e+01	9.052e+01	9.052e+01	9.052e+01	1.094e+02	1.094e+02	1.094e+02	1.380e+02	1.380e+02	1.380e+02
-4.000e+02	9.062e+01	9.062e+01	9.062e+01	9.052e+01	9.052e+01	9.052e+01	1.094e+02	1.094e+02	1.094e+02	1.380e+02	1.380e+02	1.380e+02
-5.000e+02	9.062e+01	9.062e+01	9.062e+01	1.192e+02	1.192e+02	1.192e+02	1.094e+02	1.094e+02	1.094e+02	1.380e+02	1.380e+02	1.380e+02

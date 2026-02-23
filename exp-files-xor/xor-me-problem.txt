@@ -18,9 +18,9 @@ $dConsistency = ea.s.me.d.descriptor(
   nOfBins = 10
 )
 
-$problem = $xorProblem
+%$problem = $xorProblem
 %$problem = $parityProblem
-%$problem = $mopmProblem
+$problem = $mopmProblem
 
 ea.experiment(
   runs = (randomGenerator = (seed = $seeds) * [m.defaultRG()])
@@ -60,12 +60,12 @@ ea.experiment(
     $consoleCSV;
     $avgLastBoolScore;
     $increase;
-    $consistency;
-    $frozenScore;
-    $longerLife;
-    $stateTraj;
-    $archivesP;
-    $srTree;
-    $bestBehavior
+    $consistency
+    %$frozenScore;
+    %$longerLife;
+    %$stateTraj;
+    %$archivesP;
+    %$srTree;
+    %$bestBehavior
   ]
 )

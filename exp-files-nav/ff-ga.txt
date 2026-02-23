@@ -136,6 +136,20 @@ ea.experiment(
         );
         type = $imgType
       )
+    );
+    ea.l.savePlotAndCsvForExp(
+      path = $basePath + "boxplot-best-test-arenas-avg-final.d." + $imgType;
+      plot = ea.plot.multi.yBoxplotExp(
+        y = f.avg(of = f.all(
+          of = ds.f.stateless(of = ds.f.nonLearning(of = ea.f.solution(of = ea.f.best())));
+          fs = (of = (simulation = (environment = $testEnviroment)
+          * [ds.sat.fromEnvironment()])
+          * [ds.f.simulate(dT = $dT; tRange = $tRange)])
+          * [ds.e.n.finalD()]
+        ));
+        xSubplot = f.replaceAll(of = f.interpolated(name = numberOfInnerLayers; s = "{solver.mapper.of.parametrized.innerLayers}{solver.mapper.parametrized.innerLayers}"); regex="null")
+      );
+      type = $imgType
     )
   ]
 )
