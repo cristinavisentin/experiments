@@ -26,6 +26,24 @@ ea.experiment(
   * (problem = $problem)
   * (solver = (stop = ea.sc.nOfQualityEvaluations(n = $nOfEvals)) * [
     ea.s.mapElites(
+      name = "me-hebbian-network";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianNetworkMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    );
+    ea.s.mapElites(
+      name = "me-hebbian-layer";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianLayerMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    );
+    ea.s.mapElites(
+      name = "me-hebbian-neuron";
+      representation = ea.representation.doubleString();
+      mapper = $hebbianNeuronMapper;
+      descriptors = [$dIncrease; $dConsistency]
+    );
+    ea.s.mapElites(
       name = "me-hebbian-synapse";
       representation = ea.representation.doubleString();
       mapper = $hebbianSynapseMapper;
