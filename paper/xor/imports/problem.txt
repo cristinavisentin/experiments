@@ -1,0 +1,73 @@
+$caseIndexesXor = [360:1:399]       % last 40 (=10%)
+$caseIndexesParity5 = [864:1:959]   % last 96 (=10%)
+$caseIndexesMopm3 = [1728:1:1919]   % last 192 (=10%)
+
+$lastIndexesXor = [360:1:399]       % last 40 (=10%)
+$lastIndexesParity5 = [864:1:959]   % last 96 (=10%)
+$lastIndexesMopm3 = [1728:1:1919]   % last 192 (=10%)
+
+$firstIndexesXor = [0:1:39]         % first 40 (=10%)
+$firstIndexesParity5 = [0:1:95]     % last 96 (=10%)
+$firstIndexesMopm3 = [0:1:191]      % last 192 (=10%)
+
+$qFunctions = f.allNamed(fs = m.sKeyMap(
+  keys = [behavior; avgLastBoolScore; increase; consistency];
+  values = [
+    f.identity();
+    ds.e.sBool.avgScore(
+      scoreType = boolean;
+      caseIndexes = $caseIndexesXor
+    );
+    ds.e.sBool.avgScoreDelta(
+      scoreType = unlimited;
+      firstIndexes = [-40:1:-1]; 
+      secondIndexes = $firstIndexesXor    
+    );
+    ds.e.sBool.avgScoreVariation(
+      scoreType = unlimited;
+      indexes = [-40:1:-1]  
+    )
+  ]
+))
+
+$xorProblem = ea.p.simToTo(
+  name = "xor";
+  simulation = ds.s.sequentialXor(
+    cases = $casesXor;
+    rewardType = unlimited;
+    resetAgent = true;
+    shuffle = true
+  );
+  dT = 1;
+  tRange = $tRangeXor;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  qFunction = $qFunctions
+)
+
+$parityProblem = ea.p.simToTo(
+  name = "parity";
+  simulation = ds.s.sequentialBf(
+    cases = $casesParity5;
+    target = ea.misc.evenParityBf(n = 5);
+    rewardType = unlimited;
+    resetAgent = true
+  );
+  dT = 1;
+  tRange = $tRangeParity5;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  qFunction = $qFunctions
+)
+
+$mopmProblem = ea.p.simToTo(
+  name = "mopm";
+  simulation = ds.s.sequentialBf(
+    cases = $casesMopm3;
+    target = ea.misc.mopmBf(n = 3);
+    rewardType = unlimited;
+    resetAgent = true
+  );
+  dT = 1;
+  tRange = $tRangeMopm3;
+  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  qFunction = $qFunctions
+)
