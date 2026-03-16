@@ -1,10 +1,6 @@
-$caseIndexesXor = [360:1:399]       % last 40 (=10%)
-$caseIndexesParity5 = [864:1:959]   % last 96 (=10%)
-$caseIndexesMopm3 = [1728:1:1919]   % last 192 (=10%)
-
-$lastIndexesXor = [360:1:399]       % last 40 (=10%)
-$lastIndexesParity5 = [864:1:959]   % last 96 (=10%)
-$lastIndexesMopm3 = [1728:1:1919]   % last 192 (=10%)
+$lastIndexesXor = [-40:1:-1]        % last 40 (=10%)
+$lastIndexesParity5 = [-96:1:-1]    % last 96 (=10%)
+$lastIndexesMopm3 = [-192:1:-1]     % last 192 (=10%)
 
 $firstIndexesXor = [0:1:39]         % first 40 (=10%)
 $firstIndexesParity5 = [0:1:95]     % last 96 (=10%)
@@ -16,16 +12,24 @@ $qFunctions = f.allNamed(fs = m.sKeyMap(
     f.identity();
     ds.e.sBool.avgScore(
       scoreType = boolean;
-      caseIndexes = $caseIndexesXor
+      caseIndexes = $lastIndexesXor
     );
-    ds.e.sBool.avgScoreDelta(
-      scoreType = unlimited;
-      firstIndexes = [-40:1:-1]; 
-      secondIndexes = $firstIndexesXor    
+    ea.f.numExpr(
+      expr = "-(x2;x1)";
+      args = [
+        ds.e.sBool.avgScore(
+          scoreType = unlimited;
+          caseIndexes = $firstIndexesXor
+        );
+        ds.e.sBool.avgScore(
+          scoreType = unlimited;
+          caseIndexes = $lastIndexesXor
+        )
+      ]
     );
-    ds.e.sBool.avgScoreVariation(
+    ds.e.sBool.sdtDevScore(
       scoreType = unlimited;
-      indexes = [-40:1:-1]  
+      indexes = $lastIndexesXor
     )
   ]
 ))

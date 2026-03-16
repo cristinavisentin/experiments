@@ -1,4 +1,4 @@
-$basePath = ''../results/{^^.name}/{^^.startTime}/''
+$basePath = ''./paper/results/{^^.name}/{^^.startTime}/''
 $imgType = svg
 
 $testEnviroment = (arena = $testArenas)
