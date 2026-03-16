@@ -7,7 +7,7 @@ $firstIndexesParity5 = [0:1:95]     % last 96 (=10%)
 $firstIndexesMopm3 = [0:1:191]      % last 192 (=10%)
 
 $qFunctions = f.allNamed(fs = m.sKeyMap(
-  keys = [behavior; avgLastBoolScore; increase; consistency];
+  keys = [behavior; maturePerformance; increase; inconsistency];
   values = [
     f.identity();
     ds.e.sBool.avgScore(
@@ -44,7 +44,7 @@ $xorProblem = ea.p.simToTo(
   );
   dT = 1;
   tRange = $tRangeXor;
-  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  comparator = ea.comparator.descending(of = f.mapValue(key = maturePerformance));
   qFunction = $qFunctions
 )
 
@@ -58,7 +58,7 @@ $parityProblem = ea.p.simToTo(
   );
   dT = 1;
   tRange = $tRangeParity5;
-  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  comparator = ea.comparator.descending(of = f.mapValue(key = maturePerformance));
   qFunction = $qFunctions
 )
 
@@ -72,6 +72,6 @@ $mopmProblem = ea.p.simToTo(
   );
   dT = 1;
   tRange = $tRangeMopm3;
-  comparator = ea.comparator.descending(of = f.mapValue(key = avgLastBoolScore));
+  comparator = ea.comparator.descending(of = f.mapValue(key = maturePerformance));
   qFunction = $qFunctions
 )
