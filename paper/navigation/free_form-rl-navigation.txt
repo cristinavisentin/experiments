@@ -14,7 +14,7 @@ $dIncrease = ea.s.me.d.descriptor(
   max = 500.0; 
   nOfBins = 10
 )
-$dConsistency = ea.s.me.d.descriptor(
+$dInconsistency = ea.s.me.d.descriptor(
   f = f.mapValue(key = consistency; of = ea.f.quality()); 
   min = 0.0; 
   max = 200.0; 
@@ -29,25 +29,25 @@ ea.experiment(
       name = "me-hebbian-network";
       representation = ea.representation.doubleString();
       mapper = $hebbianNetworkMapper;
-      descriptors = [$dIncrease; $dConsistency]
+      descriptors = [$dIncrease; $dInconsistency]
     );
     ea.s.mapElites(
       name = "me-hebbian-layer";
       representation = ea.representation.doubleString();
       mapper = $hebbianLayerMapper;
-      descriptors = [$dIncrease; $dConsistency]
+      descriptors = [$dIncrease; $dInconsistency]
     );
     ea.s.mapElites(
       name = "me-hebbian-neuron";
       representation = ea.representation.doubleString();
       mapper = $hebbianNeuronMapper;
-      descriptors = [$dIncrease; $dConsistency]
+      descriptors = [$dIncrease; $dInconsistency]
     );
     ea.s.mapElites(
       name = "me-hebbian-synapse";
       representation = ea.representation.doubleString();
       mapper = $hebbianSynapseMapper;
-      descriptors = [$dIncrease; $dConsistency]
+      descriptors = [$dIncrease; $dInconsistency]
     );
     ea.s.mapElites(
       name = "me-freeForm";
@@ -56,7 +56,7 @@ ea.experiment(
         operators = [addition; subtraction; multiplication; prot_division; prot_log; max; min; tanh; gt; lt; ternary]
       );
       mapper = $freeFormMapper;
-      descriptors = [$dIncrease; $dConsistency]
+      descriptors = [$dIncrease; $dInconsistency]
     )
   ])
   * [ea.run()];

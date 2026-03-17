@@ -3,7 +3,7 @@ $trainEnviroment = (arena = $trainArenas)
 
 $qFunctions = f.allNamed(
   fs = m.sKeyMap(
-    keys = [fitness; increase; consistency];
+    keys = [maturePerformance; increase; inconsistency];
     values = [
       f.avg(of = f.subList(from = 45; to = 50; relative = false));
       ea.f.numExpr(
@@ -32,5 +32,5 @@ $problem = ea.p.manyToCbto(
     * [ds.srlat.fromNumericalEnvironment(reward = ds.e.nav.reward.reaching())])
     * [$simToTo];
   aggregator = $qFunctions;
-  comparator = ea.comparator.descending(of = f.mapValue(key = fitness))
+  comparator = ea.comparator.descending(of = f.mapValue(key = maturePerformance))
 )

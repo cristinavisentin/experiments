@@ -7,7 +7,7 @@ $testEnviroment = (arena = $testArenas)
 $console = ea.l.console(
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-    f.mapValue(key = fitness; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+    f.mapValue(key = maturePerformance; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
   ];
   onlyLast = true
 )
@@ -16,16 +16,16 @@ $consoleCSV = ea.l.csv(
   path = $basePath + "console.csv";
   eFunctions = [
     ea.f.size(of = ea.f.genotype(of = ea.f.best()); format = "%4d");
-    f.mapValue(key = fitness; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
+    f.mapValue(key = maturePerformance; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
     f.mapValue(key = increase; of = ea.f.quality(of = ea.f.best()); format = "%6.4f");
-    f.mapValue(key = consistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
+    f.mapValue(key = inconsistency; of = ea.f.quality(of = ea.f.best()); format = "%6.4f")
   ]
 )
 
-$fitness = ea.l.savePlotAndCsvForRun(
-  path = $basePath + "fitness." + $imgType;
+$maturePerformance = ea.l.savePlotAndCsvForRun(
+  path = $basePath + "maturePerformance." + $imgType;
   plot = ea.plot.multi.quality(
-    q = f.mapValue(key = fitness)
+    q = f.mapValue(key = maturePerformance)
   );
   overwrite = true;
   type = $imgType
@@ -40,10 +40,10 @@ $increase = ea.l.savePlotAndCsvForRun(
   type = $imgType
 )
 
-$consistency = ea.l.savePlotAndCsvForRun(
-  path = $basePath + "consistency." + $imgType;
+$inconsistency = ea.l.savePlotAndCsvForRun(
+  path = $basePath + "inconsistency." + $imgType;
   plot = ea.plot.multi.quality(
-    q = f.mapValue(key = consistency)
+    q = f.mapValue(key = inconsistency)
   );
   overwrite = true;
   type = $imgType
@@ -52,7 +52,7 @@ $consistency = ea.l.savePlotAndCsvForRun(
 $archives = ea.l.savePlotAndCsvForRun(
   path = $basePath + "/{solver.name}/me-archives-{randomGenerator.seed:%02d}." + $imgType;
   plot = ea.plot.single.me(values = [
-    f.mapValue(key = fitness; of = ea.f.quality())
+    f.mapValue(key = maturePerformance; of = ea.f.quality())
   ]);
   kCondition = predicate.matches(f = f.mappableKey(key = "solver.name"); regex = "me.*");
   type = $imgType
